@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "125620944035",
+    "project_id": "blooddonationqatar",
+    "storage_bucket": "blooddonationqatar.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:125620944035:android:aad6b4cae46af10bffd316",
+        "android_client_info": {
+          "package_name": "com.example.blood_donation"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxI4gcFkwkEXLHJfc2EvvFw9fJuyjlp7k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
