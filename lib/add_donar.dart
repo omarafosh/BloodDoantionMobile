@@ -55,6 +55,7 @@ class _AddDonarState extends State<AddDonar> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(fontFamily: 'Cairo'),
       home: Directionality(
         // add this
         textDirection: TextDirection.rtl, // set this property
@@ -72,7 +73,11 @@ class _AddDonarState extends State<AddDonar> {
               padding: const EdgeInsets.all(12),
               child: ListView(
                 children: [
-                  Text("الاسم"),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("الاسم"),
+                  ),
+                  Container(height: 15),
                   CustomTextField(
                       hintText: "الاسم",
                       Mycontroller: DonorName,
@@ -82,7 +87,11 @@ class _AddDonarState extends State<AddDonar> {
                         }
                       }),
                   Container(height: 10),
-                  Text("العمر"),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("العمر"),
+                  ),
+                  Container(height: 10),
                   CustomTextField(
                       hintText: "العمر",
                       Mycontroller: DonorAge,
@@ -92,7 +101,11 @@ class _AddDonarState extends State<AddDonar> {
                         }
                       }),
                   Container(height: 10),
-                  Text("الزمرة"),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("الزمرة"),
+                  ),
+                  Container(height: 10),
                   CustomDropdownMenu(
                     initialSelection:
                         selectedBloodGroupOption ?? bloodGroupOptions.first,
@@ -104,7 +117,11 @@ class _AddDonarState extends State<AddDonar> {
                     },
                   ),
                   Container(height: 10),
-                  Text("الجنس"),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("الجنس"),
+                  ),
+                  Container(height: 10),
                   CustomDropdownMenu(
                     initialSelection:
                         selectedGenderOption ?? GenderOptions.first,
@@ -116,7 +133,11 @@ class _AddDonarState extends State<AddDonar> {
                     },
                   ),
                   Container(height: 10),
-                  Text("الهاتف 1"),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("الهاتف 1"),
+                  ),
+                  Container(height: 10),
                   CustomTextField(
                       hintText: "الهاتف 1",
                       Mycontroller: DonorPhone1,
@@ -126,12 +147,20 @@ class _AddDonarState extends State<AddDonar> {
                         }
                       }),
                   Container(height: 10),
-                  Text("الهاتف 2"),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("الهاتف 2"),
+                  ),
+                  Container(height: 15),
                   CustomTextField(
                       hintText: "الهاتف 2",
                       Mycontroller: DonorPhone1,
                       validator: (val) {}),
-                  Text("متاح"),
+                  Container(height: 10),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("متاح"),
+                  ),
                   Container(height: 10),
                   CustomDropdownMenu(
                     initialSelection:
@@ -143,7 +172,12 @@ class _AddDonarState extends State<AddDonar> {
                       });
                     },
                   ),
-                  Text("العنوان"),
+                  Container(height: 10),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Text("العنوان"),
+                  ),
+                  Container(height: 10),
                   CustomTextField(
                       hintText: "العنوان",
                       Mycontroller: DonorAddress,
@@ -152,6 +186,7 @@ class _AddDonarState extends State<AddDonar> {
                           return 'الرجاء ادخال العنوان';
                         }
                       }),
+                  Container(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(20),
                     child: CustomButton(
