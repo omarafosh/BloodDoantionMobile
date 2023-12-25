@@ -52,10 +52,8 @@ class _HomeState extends State<Home> {
               BottomNavigationBarItem(icon: Icon(Icons.info), label: "About")
             ]),
         appBar: AppBar(
-          
           title: const Text(
             'Blood Donation Qatar',
-            
             style: TextStyle(color: Colors.white),
           ),
           actions: [
@@ -70,11 +68,12 @@ class _HomeState extends State<Home> {
           ],
           backgroundColor: Colors.red,
         ),
-        body: 
-         
-            ListView(
-              
-              children: [
+        body: Column(
+          children: [
+            Container(
+              margin: EdgeInsets.all(20),
+              color: Colors.red,
+              child: Row(children: [
                 CustomDropdownMenu(
                   initialSelection:
                       selectedBloodGroupOption ?? bloodGroupOptions.first,
@@ -94,9 +93,15 @@ class _HomeState extends State<Home> {
                     });
                   },
                 ),
-              ],
+              ]),
             ),
+            Container(
+              color: Colors.orange,
+              child: TextField(),
+            )
+          ],
         ),
-      );
+      ),
+    );
   }
 }
