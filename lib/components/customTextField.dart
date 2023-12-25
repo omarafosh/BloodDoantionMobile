@@ -1,31 +1,50 @@
 import 'package:flutter/material.dart';
-
-class CustomTextField extends StatelessWidget {
+import 'package:flutter/services.dart';
+class CustomTextField extends StatefulWidget {
   final String hintText;
-  final TextEditingController Mycontroller;
-  final String? Function(String?)? validator ;
-  const CustomTextField({super.key, required this.hintText, required this.Mycontroller, required this.validator});
+  final TextEditingController MyController;
+  final TextInputType keyboardType;
+  final String? Function(String?)? validator;
+
+  const CustomTextField({
+    Key? key,
+    required this.hintText,
+    required this.MyController,
+    required this.keyboardType,
+    this.validator,
+  }) : super(key: key);
+
+  @override
+  State<CustomTextField> createState() => _CustomTextFieldState();
+}
+
+class _CustomTextFieldState extends State<CustomTextField> {
+  late TextInputType selectedKeyboardType;
+
+  @override
+  void initState() {
+    super.initState();
+    selectedKeyboardType = widget.keyboardType;
+  }
 
   @override
   Widget build(BuildContext context) {
     return TextFormField(
-      validator:validator ,
-      
-      controller:Mycontroller ,
+      validator: widget.validator,
+      keyboardType: selectedKeyboardType,
+      inputFormatters: <TextInputFormatter>[
+        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+      ],
+      controller: widget.MyController,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(horizontal: 20),
-        hintText: hintText,
+        hintText: widget.hintText,
         hintStyle: TextStyle(fontSize: 14),
-        // contentPadding: EdgeInsets.all(12),
         filled: true,
         fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-
         ),
-
-    // Adjust as needed
-
       ),
     );
   }

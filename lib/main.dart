@@ -1,4 +1,4 @@
-import 'package:blood_donation/add_donar.dart';
+import 'package:blood_donation/add_donor.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/auth/signup.dart';
 import 'package:blood_donation/home.dart';
@@ -36,12 +36,12 @@ class _MyWidgetState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       // FirebaseAuth.instance.currentUser == null ? Login() : AddDonar(),
-      home: AddDonar(),
+      home: Home(),
       routes: {
         "signup": (context) => SignUp(),
         "login": (context) => Login(),
         "home": (context) => Home(),
-        "adddonar": (context) => AddDonar(),
+        "adddonar": (context) => AddDonor(),
       },
     );
   }

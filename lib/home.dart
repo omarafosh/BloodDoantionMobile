@@ -1,6 +1,5 @@
-import 'package:blood_donation/components/customTextField.dart';
-import 'package:blood_donation/pakages/compobox.dart';
-import 'package:drop_down_list/model/selected_list_item.dart';
+import 'package:blood_donation/components/customDropDown.dart';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,16 +13,20 @@ class _HomeState extends State<Home> {
   int selectedIndex = 0;
   TextEditingController address = TextEditingController();
   TextEditingController group = TextEditingController();
-  final List<String> dataList = [
-    'A',
-    'B',
-    'C',
-    // يمكنك إضافة المزيد من الخيارات هنا
+
+  String? selectedCiteisOption;
+  List<String> CiteisOptions = ['الدوحة', '1الدوحة'];
+  String? selectedBloodGroupOption;
+  List<String> bloodGroupOptions = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'O+',
+    'O-',
+    'AB+',
+    'AB-'
   ];
-
-  String selectedFirstOption = 'Select'; // الخيار المحدد افتراضيًا
-  String selectedSecondOption = 'خيار أ'; // الخيار المحدد افتراضيًا
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -49,8 +52,10 @@ class _HomeState extends State<Home> {
               BottomNavigationBarItem(icon: Icon(Icons.info), label: "About")
             ]),
         appBar: AppBar(
+          
           title: const Text(
             'Blood Donation Qatar',
+            
             style: TextStyle(color: Colors.white),
           ),
           actions: [
@@ -65,32 +70,33 @@ class _HomeState extends State<Home> {
           ],
           backgroundColor: Colors.red,
         ),
-        body: Container(
-          width: 20,
-          child: ListView(
-            children: [
-              Compobox(
-                  datalist: [
-                    SelectedListItem(name: "A"),
-                    SelectedListItem(name: "B")
-                  ],
-                  textEditingController: address,
-                  title: "Select Address",
-                  hint: "Address",
-                  isCitySelected: true),
-              Compobox(
-                  datalist: [
-                    SelectedListItem(name: "A"),
-                    SelectedListItem(name: "B")
-                  ],
-                  textEditingController: address,
-                  title: "Select Address",
-                  hint: "Address",
-                  isCitySelected: true)
-            ],
-          ),
+        body: 
+         
+            ListView(
+              
+              children: [
+                CustomDropdownMenu(
+                  initialSelection:
+                      selectedBloodGroupOption ?? bloodGroupOptions.first,
+                  menuEntries: bloodGroupOptions,
+                  onSelected: (newValue) {
+                    setState(() {
+                      selectedBloodGroupOption = newValue;
+                    });
+                  },
+                ),
+                CustomDropdownMenu(
+                  initialSelection: selectedCiteisOption ?? CiteisOptions.first,
+                  menuEntries: CiteisOptions,
+                  onSelected: (newValue) {
+                    setState(() {
+                      selectedCiteisOption = newValue;
+                    });
+                  },
+                ),
+              ],
+            ),
         ),
-      ),
-    );
+      );
   }
 }

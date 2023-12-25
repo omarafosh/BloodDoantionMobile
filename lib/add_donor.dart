@@ -6,14 +6,14 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class AddDonar extends StatefulWidget {
-  const AddDonar({super.key});
+class AddDonor extends StatefulWidget {
+  const AddDonor({super.key});
 
   @override
-  State<AddDonar> createState() => _AddDonarState();
+  State<AddDonor> createState() => _AddDonarState();
 }
 
-class _AddDonarState extends State<AddDonar> {
+class _AddDonarState extends State<AddDonor> {
   GlobalKey<FormState> formstate = GlobalKey<FormState>();
 
   TextEditingController DonorName = TextEditingController();
@@ -41,7 +41,7 @@ class _AddDonarState extends State<AddDonar> {
   ];
 
   String? selectedGenderOption;
-  List<String> GenderOptions = ['ذكر', 'انثى'];
+  var GenderOptions = <String>['ذكر', 'انثى'];
   CollectionReference donors = FirebaseFirestore.instance.collection("donors");
   Future<void> Add_donors() async {
     await donors
@@ -73,35 +73,38 @@ class _AddDonarState extends State<AddDonar> {
               padding: const EdgeInsets.all(12),
               child: ListView(
                 children: [
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("الاسم"),
                   ),
                   Container(height: 15),
                   CustomTextField(
                       hintText: "الاسم",
-                      Mycontroller: DonorName,
+                      MyController: DonorName,
+                      keyboardType: TextInputType.text,
                       validator: (val) {
                         if (val == "") {
                           return 'الرجاء ادخال الاسم';
                         }
                       }),
                   Container(height: 10),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("العمر"),
                   ),
                   Container(height: 10),
                   CustomTextField(
-                      hintText: "العمر",
-                      Mycontroller: DonorAge,
-                      validator: (val) {
-                        if (val == "") {
-                          return 'الرجاء ادخال العمر';
-                        }
-                      }),
+                    hintText: "العمر",
+                    MyController: DonorAge,
+                    keyboardType: TextInputType.number,
+                    validator: (val) {
+                      if (val == "") {
+                        return 'الرجاء ادخال العمر';
+                      }
+                    },
+                  ),
                   Container(height: 10),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("الزمرة"),
                   ),
@@ -117,7 +120,7 @@ class _AddDonarState extends State<AddDonar> {
                     },
                   ),
                   Container(height: 10),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("الجنس"),
                   ),
@@ -133,31 +136,33 @@ class _AddDonarState extends State<AddDonar> {
                     },
                   ),
                   Container(height: 10),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("الهاتف 1"),
                   ),
                   Container(height: 10),
                   CustomTextField(
                       hintText: "الهاتف 1",
-                      Mycontroller: DonorPhone1,
+                      MyController: DonorPhone1,
+                      keyboardType: TextInputType.phone,
                       validator: (val) {
                         if (val == "") {
                           return 'الرجاء ادخال رقم الهاتف';
                         }
                       }),
                   Container(height: 10),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("الهاتف 2"),
                   ),
                   Container(height: 15),
                   CustomTextField(
                       hintText: "الهاتف 2",
-                      Mycontroller: DonorPhone1,
+                      MyController: DonorPhone2,
+                      keyboardType: TextInputType.phone,
                       validator: (val) {}),
                   Container(height: 10),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("متاح"),
                   ),
@@ -173,14 +178,15 @@ class _AddDonarState extends State<AddDonar> {
                     },
                   ),
                   Container(height: 10),
-                  Padding(
+                  const Padding(
                     padding: EdgeInsets.symmetric(horizontal: 20),
                     child: Text("العنوان"),
                   ),
                   Container(height: 10),
                   CustomTextField(
                       hintText: "العنوان",
-                      Mycontroller: DonorAddress,
+                      MyController: DonorAddress,
+                      keyboardType: TextInputType.streetAddress,
                       validator: (val) {
                         if (val == "") {
                           return 'الرجاء ادخال العنوان';

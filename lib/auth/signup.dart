@@ -23,7 +23,7 @@ class _SignUpState extends State<SignUp> {
         padding: const EdgeInsets.all(20),
         child: ListView(children: [
           Form(
-            key:formstate,
+            key: formstate,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -31,7 +31,8 @@ class _SignUpState extends State<SignUp> {
                 const CustomLogoAuth(),
                 Container(height: 20),
                 const Text("SignUp",
-                    style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
+                    style:
+                        TextStyle(fontSize: 30, fontWeight: FontWeight.bold)),
                 Container(height: 10),
                 const Text("SignUp To Continue Using The App",
                     style: TextStyle(color: Colors.grey)),
@@ -43,7 +44,8 @@ class _SignUpState extends State<SignUp> {
                 Container(height: 10),
                 CustomTextField(
                   hintText: "ُEnter Your Email",
-                  Mycontroller: email,
+                  MyController: email,
+                  keyboardType: TextInputType.emailAddress,
                   validator: (val) {
                     if (val == "") {
                       return 'Please Enter An Email';
@@ -58,7 +60,8 @@ class _SignUpState extends State<SignUp> {
                 Container(height: 10),
                 CustomTextField(
                   hintText: "ُEnter Your Password",
-                  Mycontroller: password,
+                  MyController: password,
+                  keyboardType: TextInputType.visiblePassword,
                   validator: (val) {
                     if (val == "") {
                       return 'Please Enter An Password';

@@ -55,11 +55,15 @@ class _LoginState extends State<Login> {
               ),
               Container(height: 15),
               CustomTextField(
-                  hintText: "Enter Your Email", Mycontroller: email,validator: (val){
-                   if (val==""){
+                hintText: "Enter Your Email",
+                keyboardType: TextInputType.emailAddress,
+                MyController: email,
+                validator: (val) {
+                  if (val == "") {
                     return 'Please Enter An Email';
-                   }
-                  },),
+                  }
+                },
+              ),
               Container(
                 height: 15,
               ),
@@ -71,10 +75,13 @@ class _LoginState extends State<Login> {
                 height: 15,
               ),
               CustomTextField(
-                  hintText: "Enter Your Password", Mycontroller: password,validator: (val){
-                  if (val==""){
-                    return 'Please Enter An Password';
-                   }
+                  hintText: "Enter Your Password",
+                  MyController: password,
+                  keyboardType: TextInputType.visiblePassword,
+                  validator: (val) {
+                    if (val == "") {
+                      return 'Please Enter An Password';
+                    }
                   }),
               Container(height: 15),
               Container(
