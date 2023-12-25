@@ -10,17 +10,22 @@ class CustomTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return TextFormField(
       validator:validator ,
+      
       controller:Mycontroller ,
       decoration: InputDecoration(
+        contentPadding: EdgeInsets.symmetric(horizontal: 20),
         hintText: hintText,
         hintStyle: TextStyle(fontSize: 14),
-        contentPadding: EdgeInsets.all(10),
+        // contentPadding: EdgeInsets.all(12),
         filled: true,
-        fillColor: Colors.grey[200],
+        fillColor: Colors.white,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(20),
-          borderSide: BorderSide(color: Color.fromARGB(255, 252, 249, 249)),
+
         ),
+
+    // Adjust as needed
+
       ),
     );
   }

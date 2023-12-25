@@ -65,27 +65,30 @@ class _HomeState extends State<Home> {
           ],
           backgroundColor: Colors.red,
         ),
-        body: ListView(
-          children: [
-            Compobox(
-                datalist: [
-                  SelectedListItem(name: "A"),
-                  SelectedListItem(name: "B")
-                ],
-                textEditingController: address,
-                title: "Select Address",
-                hint: "Address",
-                isCitySelected: true),
-            Compobox(
-                datalist: [
-                  SelectedListItem(name: "A"),
-                  SelectedListItem(name: "B")
-                ],
-                textEditingController: address,
-                title: "Select Address",
-                hint: "Address",
-                isCitySelected: true)
-          ],
+        body: Container(
+          width: 20,
+          child: ListView(
+            children: [
+              Compobox(
+                  datalist: [
+                    SelectedListItem(name: "A"),
+                    SelectedListItem(name: "B")
+                  ],
+                  textEditingController: address,
+                  title: "Select Address",
+                  hint: "Address",
+                  isCitySelected: true),
+              Compobox(
+                  datalist: [
+                    SelectedListItem(name: "A"),
+                    SelectedListItem(name: "B")
+                  ],
+                  textEditingController: address,
+                  title: "Select Address",
+                  hint: "Address",
+                  isCitySelected: true)
+            ],
+          ),
         ),
       ),
     );

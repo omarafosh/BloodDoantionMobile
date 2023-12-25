@@ -29,7 +29,7 @@ class _CompoboxState extends State<Compobox> {
       DropDown(
         isDismissible: true,
         bottomSheetTitle: const Text(
-          "kCities",
+          "Select Item",
           style: TextStyle(
             fontWeight: FontWeight.bold,
             fontSize: 20.0,
@@ -77,9 +77,11 @@ class _CompoboxState extends State<Compobox> {
       children: [
         Text(widget.title),
         const SizedBox(
+          
           height: 5.0,
         ),
         TextFormField(
+        
           controller: widget.textEditingController,
           cursorColor: Colors.black,
           onTap: widget.isCitySelected
