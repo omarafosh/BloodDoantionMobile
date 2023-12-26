@@ -8,14 +8,13 @@ class CustomLogoAuth extends StatelessWidget {
     return Center(
       child: Container(
           alignment: Alignment.center,
-          width: 100,
-          height: 100,
+          width: 150,
+          height: 150,
           padding: const EdgeInsets.all(10),
-          decoration: BoxDecoration(
-              color: Colors.grey[200], borderRadius: BorderRadius.circular(70)),
+          decoration: BoxDecoration( borderRadius: BorderRadius.circular(70)),
           child: Image.asset(
-            "images/logo.png",
-            height: 80,
+            "images/logo.jpg",
+            height: 150,
             // fit: BoxFit.fill,
           )),
     );

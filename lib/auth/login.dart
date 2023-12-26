@@ -20,137 +20,133 @@ class _LoginState extends State<Login> {
   GlobalKey<FormState> formstate = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: EdgeInsets.all(20),
-        child: ListView(children: [
-          Form(
-            key: formstate,
-            child:
-                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-              Container(
-                height: 50,
+    return MaterialApp(
+      theme: ThemeData(fontFamily: 'Cairo'),
+      home: Directionality(
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          body: Container(
+            padding: EdgeInsets.all(20),
+            child: ListView(children: [
+              Form(
+                key: formstate,
+                child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        height: 10,
+                      ),
+                      CustomLogoAuth(),
+                      Container(
+                        height: 20,
+                      ),
+                      Text(
+                        "تسجيل دخول",
+                        style: TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 30),
+                      ),
+                      Container(
+                        height: 4,
+                      ),
+                      Text(
+                        "تحتاج الى تسجيل الدخول لاستخدام التطبيق",
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Container(
+                        height: 20,
+                      ),
+                      Text(
+                        "البريد الالكتروني",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      Container(height: 15),
+                      CustomTextField(
+                        hintText: "ادخل البريد الالكتروني",
+                        keyboardType: TextInputType.emailAddress,
+                        MyController: email,
+                        validator: (val) {
+                          if (val == "") {
+                            return 'الرجاء احال البريد الالكتروني';
+                          }
+                        },
+                      ),
+                      Container(
+                        height: 15,
+                      ),
+                      Text(
+                        "كلمة المرور",
+                        style: TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                      Container(
+                        height: 15,
+                      ),
+                      CustomTextField(
+                          hintText: "ادخل كلمة المرور",
+                          MyController: password,
+                          keyboardType: TextInputType.visiblePassword,
+                          validator: (val) {
+                            if (val == "") {
+                              return 'الرجاء ادخال كلمة المرور';
+                            }
+                          }),
+                      Container(height: 15),
+                      Container(
+                        margin: EdgeInsets.only(top: 10, bottom: 15),
+                        alignment: Alignment.topRight,
+                        child: Text(
+                          "نسيت كلمة المرور",
+                        ),
+                      ),
+                    ]),
               ),
-              CustomLogoAuth(),
-              Container(
-                height: 20,
-              ),
-              Text(
-                "Login",
-                style: TextStyle(fontWeight: FontWeight.w600, fontSize: 30),
-              ),
-              Container(
-                height: 4,
-              ),
-              Text(
-                "Login To Continue Using Try App",
-                style: TextStyle(color: Colors.grey),
-              ),
-              Container(
-                height: 20,
-              ),
-              Text(
-                "Email",
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              Container(height: 15),
-              CustomTextField(
-                hintText: "Enter Your Email",
-                keyboardType: TextInputType.emailAddress,
-                MyController: email,
-                validator: (val) {
-                  if (val == "") {
-                    return 'Please Enter An Email';
-                  }
-                },
-              ),
-              Container(
-                height: 15,
-              ),
-              Text(
-                "Password",
-                style: TextStyle(fontWeight: FontWeight.w600),
-              ),
-              Container(
-                height: 15,
-              ),
-              CustomTextField(
-                  hintText: "Enter Your Password",
-                  MyController: password,
-                  keyboardType: TextInputType.visiblePassword,
-                  validator: (val) {
-                    if (val == "") {
-                      return 'Please Enter An Password';
+              CustomButton(
+                  title: "تسجيل الدخول",
+                  onPressed: () async {
+                    if (formstate.currentState!.validate()) {
+                      try {
+                        final credential = await FirebaseAuth.instance
+                            .signInWithEmailAndPassword(
+                          email: email.text,
+                          password: password.text,
+                        );
+                        Navigator.of(context).pushReplacementNamed("home");
+                      } catch (e) {
+                        // ignore: use_build_context_synchronously
+                        AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.error,
+                          animType: AnimType.rightSlide,
+                          title: 'خطأ',
+                          desc: 'بيانات تسجيل الدخول خاطئة',
+                        ).show();
+                      }
                     }
                   }),
-              Container(height: 15),
-              Container(
-                margin: EdgeInsets.only(top: 10, bottom: 15),
-                alignment: Alignment.topRight,
-                child: Text(
-                  "Forget Password ?",
-                ),
+              Container(height: 10),
+              MaterialButton(
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(20)),
+                color: Colors.red[200],
+                textColor: Colors.white,
+                onPressed: () {},
+                child: Center(child: Text("تسجيل الدخول ياستخدام حساب Google")),
               ),
+              Container(height: 15),
+              InkWell(
+                  onTap: () {
+                    Navigator.of(context).pushReplacementNamed("signup");
+                  },
+                  child: Center(
+                    child: Text.rich(TextSpan(children: const [
+                      TextSpan(text: "لا تمتلك حساب ؟ "),
+                      TextSpan(
+                          text: "تسجيل حساب جديد",
+                          style: TextStyle(color: Colors.orange)),
+                    ])),
+                  ))
             ]),
           ),
-          CustomButton(
-              title: "Login",
-              onPressed: () async {
-                if (formstate.currentState!.validate()) {
-                  try {
-                    final credential =
-                        await FirebaseAuth.instance.signInWithEmailAndPassword(
-                      email: email.text,
-                      password: password.text,
-                    );
-                    Navigator.of(context).pushReplacementNamed("home");
-                  } on FirebaseAuthException catch (e) {
-                    if (e.code == 'weak-password') {
-                      print('The password provided is too weak.');
-                      AwesomeDialog(
-                        context: context,
-                        dialogType: DialogType.error,
-                        animType: AnimType.rightSlide,
-                        title: 'Error',
-                        desc: 'The password provided is too weak.',
-                      ).show();
-                    } else if (e.code == 'email-already-in-use') {
-                      print('The account already exists for that email.');
-                      AwesomeDialog(
-                        context: context,
-                        dialogType: DialogType.error,
-                        animType: AnimType.rightSlide,
-                        title: 'Error',
-                        desc: 'The account already exists for that email.',
-                      ).show();
-                    }
-                  } catch (e) {
-                    print(e);
-                  }
-                }
-              }),
-          Container(height: 10),
-          MaterialButton(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            color: Colors.red[200],
-            textColor: Colors.white,
-            onPressed: () {},
-            child: Center(child: Text("Login with Google")),
-          ),
-          Container(height: 15),
-          InkWell(
-              onTap: () {
-                Navigator.of(context).pushReplacementNamed("signup");
-              },
-              child: Center(
-                child: Text.rich(TextSpan(children: const [
-                  TextSpan(text: "Don't Have An Acount ? "),
-                  TextSpan(
-                      text: "Register", style: TextStyle(color: Colors.orange)),
-                ])),
-              ))
-        ]),
+        ),
       ),
     );
   }
