@@ -32,9 +32,9 @@ class _CustomTextFieldState extends State<CustomTextField> {
     return TextFormField(
       validator: widget.validator,
       keyboardType: selectedKeyboardType,
-      inputFormatters: <TextInputFormatter>[
-        FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
-      ],
+      // inputFormatters: <TextInputFormatter>[
+      //   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
+      // ],
       controller: widget.MyController,
       decoration: InputDecoration(
         contentPadding: EdgeInsets.symmetric(horizontal: 20),

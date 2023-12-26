@@ -35,8 +35,8 @@ class _MyWidgetState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // FirebaseAuth.instance.currentUser == null ? Login() : AddDonar(),
-      home: const Login(),
+
+      home: (FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser!.emailVerified) ? const Home() : const Login(),
       routes: {
         "signup": (context) => SignUp(),
         "login": (context) => Login(),

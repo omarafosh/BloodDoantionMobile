@@ -1,5 +1,5 @@
 import 'package:blood_donation/components/customDropDown.dart';
-
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
@@ -14,8 +14,18 @@ class _HomeState extends State<Home> {
   TextEditingController address = TextEditingController();
   TextEditingController group = TextEditingController();
 
-  String? selectedCiteisOption;
-  List<String> CiteisOptions = ['الدوحة', '1الدوحة'];
+  String? selectedCitiesOption;
+
+  List<String> CitiesOptions = [
+    'الدوحة',
+    'الخور',
+    'الشمال',
+    'الوكرة',
+    'الوسيل',
+    'دخان',
+    'مسيعيد',
+    'الشيخانية'
+  ];
   String? selectedBloodGroupOption;
   List<String> bloodGroupOptions = [
     'A+',
@@ -27,6 +37,22 @@ class _HomeState extends State<Home> {
     'AB+',
     'AB-'
   ];
+  bool isLoading = true;
+  List<QueryDocumentSnapshot> data = [];
+  getDonors() async {
+    QuerySnapshot query =
+        await FirebaseFirestore.instance.collection("donors").get();
+    data.addAll(query.docs);
+    isLoading = false;
+    setState(() {});
+  }
+
+  @override
+  void initState() {
+    getDonors();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -68,38 +94,35 @@ class _HomeState extends State<Home> {
           ],
           backgroundColor: Colors.red,
         ),
-        body: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.all(20),
-              color: Colors.red,
-              child: Row(children: [
-                CustomDropdownMenu(
-                  initialSelection:
-                      selectedBloodGroupOption ?? bloodGroupOptions.first,
-                  menuEntries: bloodGroupOptions,
-                  onSelected: (newValue) {
-                    setState(() {
-                      selectedBloodGroupOption = newValue;
-                    });
-                  },
-                ),
-                CustomDropdownMenu(
-                  initialSelection: selectedCiteisOption ?? CiteisOptions.first,
-                  menuEntries: CiteisOptions,
-                  onSelected: (newValue) {
-                    setState(() {
-                      selectedCiteisOption = newValue;
-                    });
-                  },
-                ),
-              ]),
+        body: Container(
+          height: 140,
+          color: const Color.fromRGBO(239, 154, 154, 1),
+          margin: EdgeInsets.all(10),
+          padding: EdgeInsets.all(10),
+          child: Column(children: [
+            CustomDropdownMenu(
+              initialSelection:
+                  selectedBloodGroupOption ?? bloodGroupOptions.first,
+              menuEntries: bloodGroupOptions,
+              onSelected: (newValue) {
+                setState(() {
+                  selectedBloodGroupOption = newValue;
+                });
+              },
             ),
             Container(
-              color: Colors.orange,
-              child: TextField(),
-            )
-          ],
+              height: 10,
+            ),
+            CustomDropdownMenu(
+              initialSelection: selectedCitiesOption ?? CitiesOptions.first,
+              menuEntries: CitiesOptions,
+              onSelected: (newValue) {
+                setState(() {
+                  selectedCitiesOption = newValue;
+                });
+              },
+            ),
+          ]),
         ),
       ),
     );

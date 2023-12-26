@@ -109,7 +109,18 @@ class _LoginState extends State<Login> {
                           email: email.text,
                           password: password.text,
                         );
-                        Navigator.of(context).pushReplacementNamed("home");
+                        if (credential.user!.emailVerified) {
+                          Navigator.of(context).pushReplacementNamed("home");
+                        }else{
+                           // ignore: use_build_context_synchronously
+                           AwesomeDialog(
+                          context: context,
+                          dialogType: DialogType.error,
+                          animType: AnimType.rightSlide,
+                          title: 'خطأ',
+                          desc: 'الرجاء التوجه الى البريد الالكتروني الخاص بك لتفعيل الحساب',
+                        ).show();
+                        }
                       } catch (e) {
                         // ignore: use_build_context_synchronously
                         AwesomeDialog(

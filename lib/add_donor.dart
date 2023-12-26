@@ -26,8 +26,10 @@ class _AddDonarState extends State<AddDonor> {
   TextEditingController DonorAddress = TextEditingController();
 
   String? choiceItem;
+
   String? selectedAvailableOption;
   List<String> availableOptions = <String>['صباحا', 'مساء', 'أي وقت'];
+
   String? selectedBloodGroupOption;
   List<String> bloodGroupOptions = [
     'A+',
@@ -39,9 +41,21 @@ class _AddDonarState extends State<AddDonor> {
     'AB+',
     'AB-'
   ];
+  String? selectedCitiesOption;
+  List<String> CitiesOptions = [
+    'الدوحة',
+    'الخور',
+    'الشمال',
+    'الوكرة',
+    'الوسيل',
+    'دخان',
+    'مسيعيد',
+    'الشيخانية'
+  ];
 
   String? selectedGenderOption;
   var GenderOptions = <String>['ذكر', 'انثى'];
+
   CollectionReference donors = FirebaseFirestore.instance.collection("donors");
   Future<void> Add_donors() async {
     await donors
@@ -81,7 +95,7 @@ class _AddDonarState extends State<AddDonor> {
                   CustomTextField(
                       hintText: "الاسم",
                       MyController: DonorName,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.name,
                       validator: (val) {
                         if (val == "") {
                           return 'الرجاء ادخال الاسم';
@@ -183,15 +197,16 @@ class _AddDonarState extends State<AddDonor> {
                     child: Text("العنوان"),
                   ),
                   Container(height: 10),
-                  CustomTextField(
-                      hintText: "العنوان",
-                      MyController: DonorAddress,
-                      keyboardType: TextInputType.streetAddress,
-                      validator: (val) {
-                        if (val == "") {
-                          return 'الرجاء ادخال العنوان';
-                        }
-                      }),
+                  CustomDropdownMenu(
+                    initialSelection:
+                        selectedCitiesOption ?? CitiesOptions.first,
+                    menuEntries: CitiesOptions,
+                    onSelected: (newValue) {
+                      setState(() {
+                        selectedCitiesOption = newValue;
+                      });
+                    },
+                  ),
                   Container(height: 10),
                   Padding(
                     padding: const EdgeInsets.all(20),

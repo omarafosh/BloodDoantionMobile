@@ -50,7 +50,7 @@ class _SignUpState extends State<SignUp> {
                     CustomTextField(
                       hintText: "ُادخل البريد الالكتروني",
                       MyController: email,
-                      keyboardType: TextInputType.text,
+                      keyboardType: TextInputType.emailAddress,
                       validator: (val) {
                         if (val == "") {
                           return 'الرجاء ادخال البريد الالكتروني';
@@ -96,9 +96,11 @@ class _SignUpState extends State<SignUp> {
                         email: email.text,
                         password: password.text,
                       );
-                      Navigator.of(context).pushReplacementNamed("home");
+                      FirebaseAuth.instance.currentUser!.sendEmailVerification();
+                      Navigator.of(context).pushReplacementNamed("login");
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'weak-password') {
+                        // ignore: use_build_context_synchronously
                         AwesomeDialog(
                           context: context,
                           dialogType: DialogType.error,

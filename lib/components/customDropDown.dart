@@ -18,10 +18,11 @@ class CustomDropdownMenu extends StatelessWidget {
           BoxDecoration(border: Border.all(color: Colors.grey, width: 2),borderRadius:BorderRadius.circular(20),),
       child: DropdownButton<String>(
         dropdownColor: Colors.white,
-        isExpanded: true,
-        underline: SizedBox(),
         
-        padding: EdgeInsets.symmetric(horizontal: 20),
+        isExpanded: true,
+        underline: const SizedBox(),
+        
+        padding: const EdgeInsets.symmetric(horizontal: 20.0),
         value: initialSelection,
         onChanged: onSelected,
         items: menuEntries.map((String value) {
