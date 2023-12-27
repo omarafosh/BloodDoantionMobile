@@ -1,10 +1,13 @@
-import 'package:blood_donation/add_donor.dart';
+import 'package:blood_donation/about.dart';
+import 'package:blood_donation/profile.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/auth/signup.dart';
+import 'package:blood_donation/general_data/globals.dart' as globals;
 import 'package:blood_donation/home.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,6 +29,7 @@ class _MyWidgetState extends State<MyApp> {
       if (user == null) {
         print('User is currently signed out!');
       } else {
+
         print('User is signed in!');
       }
     });
@@ -35,14 +39,17 @@ class _MyWidgetState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-
-      home: (FirebaseAuth.instance.currentUser != null && FirebaseAuth.instance.currentUser!.emailVerified) ? const Home() : const Login(),
-      routes: {
-        "signup": (context) => SignUp(),
-        "login": (context) => Login(),
-        "home": (context) => Home(),
-        "adddonar": (context) => AddDonor(),
-      },
+        home: (FirebaseAuth.instance.currentUser != null &&
+                FirebaseAuth.instance.currentUser!.emailVerified)
+            ? Profile()
+            : const Login(),
+        routes: {
+          "signup": (context) => SignUp(),
+          "login": (context) => Login(),
+          "home": (context) => Home(),
+          "profile": (context) => Profile(),
+          "about": (context) => About(),
+        },
     );
   }
 }

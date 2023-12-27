@@ -1,4 +1,5 @@
 import 'package:blood_donation/components/customDropDown.dart';
+import 'package:blood_donation/general_data/globals.dart' as globals;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -10,9 +11,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  // يمكنك الوصول إلى متغير الحالة العامة من أي مكان باستخدام Provider.of<AppData>(context)
+
   int selectedIndex = 0;
   TextEditingController address = TextEditingController();
   TextEditingController group = TextEditingController();
+  String myGlobalVariable = globals.globalVariable;
+
+// لتحديث قيمة المتغير العام
 
   String? selectedCitiesOption;
 
@@ -43,6 +49,7 @@ class _HomeState extends State<Home> {
     QuerySnapshot query =
         await FirebaseFirestore.instance.collection("donors").get();
     data.addAll(query.docs);
+    print(data);
     isLoading = false;
     setState(() {});
   }
@@ -55,6 +62,7 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    
     return MaterialApp(
       home: Scaffold(
         bottomNavigationBar: BottomNavigationBar(

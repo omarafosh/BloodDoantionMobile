@@ -1,0 +1,2 @@
+
+String globalVariable = 'قيمة الافتراضية';
