@@ -1,5 +1,6 @@
 import 'package:blood_donation/about.dart';
 import 'package:blood_donation/components/customDropDown.dart';
+import 'package:blood_donation/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -64,7 +65,6 @@ class _HomeState extends State<Home> {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Cairo'),
       home: Directionality(
-        // add this
         textDirection: TextDirection.rtl,
         child: Scaffold(
           drawer: Drawer(
@@ -81,21 +81,21 @@ class _HomeState extends State<Home> {
                   title: Text('تبرعاتي'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                    Navigator.of(context).pushReplacementNamed("home");
+                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Home()));
                   },
                 ),
                 ListTile(
                   title: Text('رسائل الشكر'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                    Navigator.of(context).pushReplacementNamed("thank");
+                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>About()));
                   },
                 ),
                 ListTile(
                   title: Text('ملفي الشخصي'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                    Navigator.of(context).pushReplacementNamed("profile");
+                   Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
                   },
                 ),
                                 ListTile(

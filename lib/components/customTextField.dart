@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+
 class CustomTextField extends StatefulWidget {
   final String hintText;
   final TextEditingController MyController;
@@ -35,8 +36,12 @@ class _CustomTextFieldState extends State<CustomTextField> {
       // inputFormatters: <TextInputFormatter>[
       //   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
       // ],
+
+      // يُعد تحديد الاتجاه مهما للنصوص باللغة العربية
+      textDirection: TextDirection.rtl,
       controller: widget.MyController,
       decoration: InputDecoration(
+        
         contentPadding: EdgeInsets.symmetric(horizontal: 20),
         hintText: widget.hintText,
         hintStyle: TextStyle(fontSize: 14),

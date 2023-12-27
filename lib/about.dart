@@ -7,8 +7,9 @@ class About extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: Colors.red,
         title: const Text(
-          'Blood Donation Qatar',
-          style: TextStyle(color: Colors.white),
+          
+          'حياة بدمك',
+          style: TextStyle(color: Colors.white,fontFamily: "Cairo"),
         ),
       ),
       body: Padding(

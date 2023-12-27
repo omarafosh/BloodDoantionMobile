@@ -5,6 +5,7 @@ import 'package:blood_donation/components/customTextField.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
 class Profile extends StatefulWidget {
   const Profile({super.key});
 
@@ -57,24 +58,20 @@ class _ProfileState extends State<Profile> {
   CollectionReference profile =
       FirebaseFirestore.instance.collection("profile");
   Future<void> saveProfile() async {
-    
     await profile
         .add({
-          'user_id':FirebaseAuth.instance.currentUser?.uid,
+          'user_id': FirebaseAuth.instance.currentUser?.uid,
           'name': DonorName.text,
           'age': DonorAge.text,
-          'group': selectedBloodGroupOption??"A+",
-          'gender': selectedGenderOption??"ذكر",
+          'group': selectedBloodGroupOption ?? "A+",
+          'gender': selectedGenderOption ?? "ذكر",
           'phone1': DonorPhone1.text,
           'phone2': DonorPhone2.text,
-          'avilable': selectedAvailableOption??"صباحا",
-          'address': selectedCitiesOption??"الدوحة",
+          'avilable': selectedAvailableOption ?? "صباحا",
+          'address': selectedCitiesOption ?? "الدوحة",
           'isDonor': isChecked,
         })
-        .then((value) {
-        })
-
-        
+        .then((value) {})
         .catchError((error) {
           AwesomeDialog(
             context: context,
@@ -91,14 +88,19 @@ class _ProfileState extends State<Profile> {
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Cairo'),
       home: Directionality(
-        // add this
-        textDirection: TextDirection.rtl, // set this property
+        textDirection: TextDirection.rtl,
         child: Scaffold(
           appBar: AppBar(
             backgroundColor: Colors.red,
             title: const Text(
-              'Blood Donation Qatar',
-              style: TextStyle(color: Colors.white),
+              'حياة بدمك',
+              style: TextStyle(color: Colors.white, fontFamily: "Cairo"),
+            ),
+            leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () {
+                Navigator.pop(context); // يقوم بالانتقال إلى الصفحة السابقة
+              },
             ),
           ),
           body: Form(
@@ -224,7 +226,6 @@ class _ProfileState extends State<Profile> {
                     onSelected: (newValue) {
                       setState(() {
                         selectedCitiesOption = newValue;
-                        
                       });
                     },
                   ),
@@ -252,7 +253,8 @@ class _ProfileState extends State<Profile> {
                             try {
                               saveProfile();
 
-                              Navigator.of(context).pushReplacementNamed("home");
+                              Navigator.of(context)
+                                  .pushReplacementNamed("home");
                             } on FirebaseAuthException catch (e) {
                               AwesomeDialog(
                                 context: context,
