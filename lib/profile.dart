@@ -5,7 +5,6 @@ import 'package:blood_donation/components/customTextField.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 class Profile extends StatefulWidget {
   const Profile({super.key});
 
@@ -18,13 +17,12 @@ class _ProfileState extends State<Profile> {
 
   TextEditingController DonorName = TextEditingController();
   TextEditingController DonorAge = TextEditingController();
-  TextEditingController DonorPhone1 = TextEditingController();
-  TextEditingController DonorPhone2 = TextEditingController();
   TextEditingController DonorGender = TextEditingController();
   TextEditingController DonorGroup = TextEditingController();
+  TextEditingController DonorPhone1 = TextEditingController();
+  TextEditingController DonorPhone2 = TextEditingController();
   TextEditingController DonorAvilable = TextEditingController();
   TextEditingController DonorAddress = TextEditingController();
-
   String? choiceItem;
   bool isChecked = false;
   String? selectedAvailableOption;
@@ -56,14 +54,36 @@ class _ProfileState extends State<Profile> {
   String? selectedGenderOption;
   var GenderOptions = <String>['ذكر', 'انثى'];
 
-  CollectionReference donors = FirebaseFirestore.instance.collection("donors");
-  Future<void> Add_donors() async {
-    await donors
+  CollectionReference profile =
+      FirebaseFirestore.instance.collection("profile");
+  Future<void> saveProfile() async {
+    
+    await profile
         .add({
+          'user_id':FirebaseAuth.instance.currentUser?.uid,
           'name': DonorName.text,
+          'age': DonorAge.text,
+          'group': selectedBloodGroupOption??"A+",
+          'gender': selectedGenderOption??"ذكر",
+          'phone1': DonorPhone1.text,
+          'phone2': DonorPhone2.text,
+          'avilable': selectedAvailableOption??"صباحا",
+          'address': selectedCitiesOption??"الدوحة",
+          'isDonor': isChecked,
         })
-        .then((value) => print("add user"))
-        .catchError((error) => print("error $error"));
+        .then((value) {
+        })
+
+        
+        .catchError((error) {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'خطأ',
+            desc: 'هناك خطأ بإدخال البيانات',
+          ).show();
+        });
   }
 
   @override
@@ -204,6 +224,7 @@ class _ProfileState extends State<Profile> {
                     onSelected: (newValue) {
                       setState(() {
                         selectedCitiesOption = newValue;
+                        
                       });
                     },
                   ),
@@ -211,7 +232,6 @@ class _ProfileState extends State<Profile> {
                   Row(
                     children: [
                       Checkbox(
-                        semanticLabel: "dddd",
                         value: isChecked, // القيمة الحالية للـ Checkbox
                         onChanged: (bool? value) {
                           setState(() {
@@ -220,7 +240,7 @@ class _ProfileState extends State<Profile> {
                           });
                         },
                       ),
-                      Text("في فعل الخيار لتصبح متبرع في مجتمعنا")
+                      Text(" فعل هذا الخيار لتصبح متبرع في مجتمعنا")
                     ],
                   ),
                   Padding(
@@ -230,8 +250,9 @@ class _ProfileState extends State<Profile> {
                         onPressed: () {
                           if (formstate.currentState!.validate()) {
                             try {
-                              Add_donors();
-                              print('save');
+                              saveProfile();
+
+                              Navigator.of(context).pushReplacementNamed("home");
                             } on FirebaseAuthException catch (e) {
                               AwesomeDialog(
                                 context: context,

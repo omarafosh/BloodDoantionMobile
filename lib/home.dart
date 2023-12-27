@@ -1,5 +1,5 @@
+import 'package:blood_donation/about.dart';
 import 'package:blood_donation/components/customDropDown.dart';
-import 'package:blood_donation/general_data/globals.dart' as globals;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -16,7 +16,6 @@ class _HomeState extends State<Home> {
   int selectedIndex = 0;
   TextEditingController address = TextEditingController();
   TextEditingController group = TextEditingController();
-  String myGlobalVariable = globals.globalVariable;
 
 // لتحديث قيمة المتغير العام
 
@@ -62,75 +61,100 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
-    
     return MaterialApp(
-      home: Scaffold(
-        bottomNavigationBar: BottomNavigationBar(
-            currentIndex: selectedIndex,
-            onTap: (value) {
-              setState(() {
-                selectedIndex = value;
-              });
-            },
-            backgroundColor: Colors.white,
-            selectedItemColor: Colors.red,
-            unselectedItemColor: Colors.black,
-            items: const [
-              BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.bloodtype), label: "Become Donar"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.email), label: "Requests"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.person), label: "Profile"),
-              BottomNavigationBarItem(icon: Icon(Icons.info), label: "About")
-            ]),
-        appBar: AppBar(
-          title: const Text(
-            'Blood Donation Qatar',
-            style: TextStyle(color: Colors.white),
+      theme: ThemeData(fontFamily: 'Cairo'),
+      home: Directionality(
+        // add this
+        textDirection: TextDirection.rtl,
+        child: Scaffold(
+          drawer: Drawer(
+            child: ListView(
+              children: [
+                ListTile(
+                  title: Text('الصفحة الرئيسية'),
+                  leading: Icon(Icons.home),
+                  onTap: () {
+                    Navigator.of(context).pushReplacementNamed("home");
+                  },
+                ),
+                ListTile(
+                  title: Text('تبرعاتي'),
+                  leading: Icon(Icons.bloodtype_outlined),
+                  onTap: () {
+                    Navigator.of(context).pushReplacementNamed("home");
+                  },
+                ),
+                ListTile(
+                  title: Text('رسائل الشكر'),
+                  leading: Icon(Icons.bloodtype_outlined),
+                  onTap: () {
+                    Navigator.of(context).pushReplacementNamed("thank");
+                  },
+                ),
+                ListTile(
+                  title: Text('ملفي الشخصي'),
+                  leading: Icon(Icons.bloodtype_outlined),
+                  onTap: () {
+                    Navigator.of(context).pushReplacementNamed("profile");
+                  },
+                ),
+                                ListTile(
+                  title: Text('حول البرنامج'),
+                  leading: Icon(Icons.bloodtype_outlined),
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>About()));
+                  },
+                ),
+              ],
+            ),
           ),
-          actions: [
-            IconButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.of(context)
-                      .pushNamedAndRemoveUntil('login', (route) => false);
+          appBar: AppBar(
+            title: const Text(
+              'Blood Donation Qatar',
+              style: TextStyle(color: Colors.white),
+            ),
+            actions: [
+              IconButton(
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Navigator.of(context)
+                        .pushNamedAndRemoveUntil('login', (route) => false);
+                  },
+                  color: Colors.white,
+                  icon: Icon(Icons.exit_to_app))
+            ],
+            backgroundColor: Colors.red,
+          ),
+          body: Container(
+            height: 140,
+            color: const Color.fromRGBO(239, 154, 154, 1),
+            margin: EdgeInsets.all(10),
+            padding: EdgeInsets.all(10),
+            child: Column(children: [
+              CustomDropdownMenu(
+                initialSelection:
+                    selectedBloodGroupOption ?? bloodGroupOptions.first,
+                menuEntries: bloodGroupOptions,
+                onSelected: (newValue) {
+                  setState(() {
+                    selectedBloodGroupOption = newValue;
+                  });
                 },
-                color: Colors.white,
-                icon: Icon(Icons.exit_to_app))
-          ],
-          backgroundColor: Colors.red,
-        ),
-        body: Container(
-          height: 140,
-          color: const Color.fromRGBO(239, 154, 154, 1),
-          margin: EdgeInsets.all(10),
-          padding: EdgeInsets.all(10),
-          child: Column(children: [
-            CustomDropdownMenu(
-              initialSelection:
-                  selectedBloodGroupOption ?? bloodGroupOptions.first,
-              menuEntries: bloodGroupOptions,
-              onSelected: (newValue) {
-                setState(() {
-                  selectedBloodGroupOption = newValue;
-                });
-              },
-            ),
-            Container(
-              height: 10,
-            ),
-            CustomDropdownMenu(
-              initialSelection: selectedCitiesOption ?? CitiesOptions.first,
-              menuEntries: CitiesOptions,
-              onSelected: (newValue) {
-                setState(() {
-                  selectedCitiesOption = newValue;
-                });
-              },
-            ),
-          ]),
+              ),
+              Container(
+                height: 10,
+              ),
+              CustomDropdownMenu(
+                initialSelection: selectedCitiesOption ?? CitiesOptions.first,
+                menuEntries: CitiesOptions,
+                onSelected: (newValue) {
+                  setState(() {
+                    selectedCitiesOption = newValue;
+                  });
+                },
+              ),
+            ]),
+          ),
         ),
       ),
     );
