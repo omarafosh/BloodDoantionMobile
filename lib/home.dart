@@ -3,7 +3,9 @@ import 'package:blood_donation/components/customCard.dart';
 import 'package:blood_donation/components/customCardThank.dart';
 import 'package:blood_donation/components/customDropDown.dart';
 import 'package:blood_donation/components/customGroup.dart';
+import 'package:blood_donation/donation.dart';
 import 'package:blood_donation/profile.dart';
+import 'package:blood_donation/thank.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -82,11 +84,19 @@ class _HomeState extends State<Home> {
                   },
                 ),
                 ListTile(
+                  title: Text('ملفي الشخصي'),
+                  leading: Icon(Icons.bloodtype_outlined),
+                  onTap: () {
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Profile()));
+                  },
+                ),
+                ListTile(
                   title: Text('تبرعاتي'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
                     Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => Home()));
+                        .push(MaterialPageRoute(builder: (context) => Donation()));
                   },
                 ),
                 ListTile(
@@ -94,15 +104,7 @@ class _HomeState extends State<Home> {
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
                     Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => About()));
-                  },
-                ),
-                ListTile(
-                  title: Text('ملفي الشخصي'),
-                  leading: Icon(Icons.bloodtype_outlined),
-                  onTap: () {
-                    Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => Profile()));
+                        .push(MaterialPageRoute(builder: (context) => Thank()));
                   },
                 ),
                 ListTile(
@@ -179,7 +181,7 @@ class _HomeState extends State<Home> {
               child: ListView(children: [
                 Container(
                   padding: EdgeInsets.all(10),
-                  child: Column(children: [customCardThank()]),
+                  child: Column(children: [CustomCard(), CustomCard()]),
                 ),
               ]),
             ),

@@ -4,6 +4,7 @@ import 'package:blood_donation/profile.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/auth/signup.dart';
 import 'package:blood_donation/home.dart';
+import 'package:blood_donation/thank.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -43,7 +44,7 @@ class _MyAppState extends State<MyApp> {
         key: ScaffoldKey,
         body: (FirebaseAuth.instance.currentUser != null &&
                 FirebaseAuth.instance.currentUser!.emailVerified)
-            ? Donation()
+            ? Home()
             : Login(),
       ),
       routes: {

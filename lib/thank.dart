@@ -1,16 +1,14 @@
-import 'package:blood_donation/add_donation.dart';
-import 'package:blood_donation/components/customCardDonation.dart';
-import 'package:blood_donation/components/customTextField.dart';
+import 'package:blood_donation/components/customCardThank.dart';
 import 'package:flutter/material.dart';
 
-class Donation extends StatefulWidget {
-  const Donation({super.key});
+class Thank extends StatefulWidget {
+  const Thank({super.key});
 
   @override
-  State<Donation> createState() => _DonationState();
+  State<Thank> createState() => _ThankState();
 }
 
-class _DonationState extends State<Donation> {
+class _ThankState extends State<Thank> {
   TextEditingController Search = TextEditingController();
   @override
   Widget build(BuildContext context) {
@@ -19,20 +17,13 @@ class _DonationState extends State<Donation> {
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.red,
-            child: Icon(Icons.add,color: Colors.white,),
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => AddDonation()));
-              }),
           appBar: AppBar(
             backgroundColor: Colors.red,
             title: const Text(
               'حياة بدمك',
               style: TextStyle(color: Colors.white, fontFamily: "Cairo"),
             ),
-            leading: IconButton(
+                 leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.pop(context); // يقوم بالانتقال إلى الصفحة السابقة
@@ -42,14 +33,7 @@ class _DonationState extends State<Donation> {
           body: Container(
             padding: EdgeInsets.all(20),
             child: Column(children: [
-              Text("قائمة  تبرعاتي"),
-              SizedBox(
-                height: 15,
-              ),
-              CustomTextField(
-                  hintText: "ادخل الرقم الشخصي",
-                  MyController: Search,
-                  keyboardType: TextInputType.number),
+              Text("قائمة رسائل الشكر"),
               SizedBox(
                 height: 15,
               ),
@@ -57,8 +41,9 @@ class _DonationState extends State<Donation> {
                 child: Container(
                   child: ListView(
                     children: [
-                      CustomCardDonation(),
-                      CustomCardDonation(),
+                      CustomCardThank(),
+                      CustomCardThank(),
+                      CustomCardThank()
                     ],
                   ),
                 ),

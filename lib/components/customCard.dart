@@ -13,6 +13,7 @@ class CustomCard extends StatelessWidget {
       child: ListTile(
         title: Row(
           children: [
+            
             Text(
               " الاسم : ",
               style: TextStyle(fontSize: 14),
