@@ -1,9 +1,13 @@
 import 'package:blood_donation/about.dart';
+import 'package:blood_donation/components/customCard.dart';
+import 'package:blood_donation/components/customCardThank.dart';
 import 'package:blood_donation/components/customDropDown.dart';
+import 'package:blood_donation/components/customGroup.dart';
 import 'package:blood_donation/profile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Home extends StatefulWidget {
   const Home({super.key});
@@ -81,28 +85,32 @@ class _HomeState extends State<Home> {
                   title: Text('تبرعاتي'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Home()));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => Home()));
                   },
                 ),
                 ListTile(
                   title: Text('رسائل الشكر'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                     Navigator.of(context).push(MaterialPageRoute(builder: (context)=>About()));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => About()));
                   },
                 ),
                 ListTile(
                   title: Text('ملفي الشخصي'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                   Navigator.of(context).push(MaterialPageRoute(builder: (context)=>Profile()));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Profile()));
                   },
                 ),
-                                ListTile(
+                ListTile(
                   title: Text('حول البرنامج'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                    Navigator.of(context).push(MaterialPageRoute(builder: (context)=>About()));
+                    Navigator.of(context)
+                        .push(MaterialPageRoute(builder: (context) => About()));
                   },
                 ),
               ],
@@ -119,42 +127,63 @@ class _HomeState extends State<Home> {
                     await FirebaseAuth.instance.signOut();
                     Navigator.of(context)
                         .pushNamedAndRemoveUntil('login', (route) => false);
+                    GoogleSignIn googleSignIn = GoogleSignIn();
+                    googleSignIn.disconnect();
                   },
                   color: Colors.white,
                   icon: Icon(Icons.exit_to_app))
             ],
             backgroundColor: Colors.red,
           ),
-          body: Container(
-            height: 140,
-            color: const Color.fromRGBO(239, 154, 154, 1),
-            margin: EdgeInsets.all(10),
-            padding: EdgeInsets.all(10),
-            child: Column(children: [
-              CustomDropdownMenu(
-                initialSelection:
-                    selectedBloodGroupOption ?? bloodGroupOptions.first,
-                menuEntries: bloodGroupOptions,
-                onSelected: (newValue) {
-                  setState(() {
-                    selectedBloodGroupOption = newValue;
-                  });
-                },
+          body: Column(children: [
+            Expanded(
+              flex: 1,
+              child: Container(
+                padding: EdgeInsets.all(10),
+                color: Colors.white,
+                child: Column(children: [
+                  SizedBox(
+                    height: 20,
+                  ),
+                  CustomDropdownMenu(
+                    initialSelection:
+                        selectedCitiesOption ?? CitiesOptions.first,
+                    menuEntries: CitiesOptions,
+                    onSelected: (newValue) {
+                      setState(() {
+                        selectedCitiesOption = newValue;
+                      });
+                    },
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                  CustomDropdownMenu(
+                    initialSelection:
+                        selectedBloodGroupOption ?? bloodGroupOptions.first,
+                    menuEntries: bloodGroupOptions,
+                    onSelected: (newValue) {
+                      setState(() {
+                        selectedBloodGroupOption = newValue;
+                      });
+                    },
+                  ),
+                ]),
               ),
-              Container(
-                height: 10,
-              ),
-              CustomDropdownMenu(
-                initialSelection: selectedCitiesOption ?? CitiesOptions.first,
-                menuEntries: CitiesOptions,
-                onSelected: (newValue) {
-                  setState(() {
-                    selectedCitiesOption = newValue;
-                  });
-                },
-              ),
-            ]),
-          ),
+            ),
+            Text(
+              "نتائج البحث : ",
+            ),
+            Expanded(
+              flex: 3,
+              child: ListView(children: [
+                Container(
+                  padding: EdgeInsets.all(10),
+                  child: Column(children: [customCardThank()]),
+                ),
+              ]),
+            ),
+          ]),
         ),
       ),
     );

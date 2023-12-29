@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 class Login extends StatefulWidget {
   const Login({super.key});
@@ -25,14 +26,31 @@ class _LoginState extends State<Login> {
     try {
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
           await FirebaseFirestore.instance.collection('profile').get();
-
       int count = querySnapshot.size; // Count of documents in the collection
-      print(count);
       return count;
     } catch (e) {
       print('Error fetching item count: $e');
       return 0; // Return 0 on error
     }
+  }
+
+  Future signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth =
+        await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    // Once signed in, return the UserCredential
+     await FirebaseAuth.instance.signInWithCredential(credential);
+     Navigator.of(context).pushReplacementNamed("home");
   }
 
   @override
@@ -87,6 +105,7 @@ class _LoginState extends State<Login> {
                             if (val == "") {
                               return 'الرجاء احال البريد الالكتروني';
                             }
+                            return null;
                           },
                         ),
                         Container(
@@ -107,13 +126,14 @@ class _LoginState extends State<Login> {
                               if (val == "") {
                                 return 'الرجاء ادخال كلمة المرور';
                               }
+                              return null;
                             }),
                         Container(height: 15),
                         Container(
                           margin: EdgeInsets.only(top: 10, bottom: 15),
                           alignment: Alignment.topRight,
                           child: Text(
-                            "نسيت كلمة المرور",
+                            "نسيت كلمة المرور ؟",
                           ),
                         ),
                       ]),
@@ -130,9 +150,11 @@ class _LoginState extends State<Login> {
                           );
                           if (credential.user!.emailVerified) {
                             var user = FirebaseAuth.instance.currentUser;
+
                             if (user != null) {
                               int itemCount = await getItemCount();
                               itemCount == 0
+                                  // ignore: use_build_context_synchronously
                                   ? Navigator.of(context)
                                       .pushReplacementNamed("profile")
                                   : Navigator.of(context)
@@ -148,6 +170,15 @@ class _LoginState extends State<Login> {
                                     'الرجاء التوجه الى البريد الالكتروني الخاص بك لتفعيل الحساب',
                               ).show();
                             }
+                          } else {
+                            AwesomeDialog(
+                              context: context,
+                              dialogType: DialogType.error,
+                              animType: AnimType.rightSlide,
+                              title: 'خطأ',
+                              desc:
+                                  'الرجاء التوجه الى البريد الالكتروني الخاص بك لتفعيل الحساب',
+                            ).show();
                           }
                         } catch (e) {
                           // ignore: use_build_context_synchronously
@@ -162,12 +193,30 @@ class _LoginState extends State<Login> {
                       }
                     }),
                 Container(height: 10),
+                // InkWell(
+                //   onTap: () async {
+                //     await FirebaseAuth.instance
+                //         .sendPasswordResetEmail(email: email.text);
+                //   },
+                // ),
                 MaterialButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
                   color: Colors.red[200],
                   textColor: Colors.white,
-                  onPressed: () {},
+                  onPressed: () {
+                    try {
+                      signInWithGoogle();
+                    } catch (e) {
+                      AwesomeDialog(
+                        context: context,
+                        dialogType: DialogType.error,
+                        animType: AnimType.rightSlide,
+                        title: 'خطأ',
+                        desc: 'تاكد من انك متصل بالانترنت',
+                      ).show();
+                    }
+                  },
                   child:
                       Center(child: Text("تسجيل الدخول ياستخدام حساب Google")),
                 ),

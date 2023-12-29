@@ -55,6 +55,7 @@ class _SignUpState extends State<SignUp> {
                         if (val == "") {
                           return 'الرجاء ادخال البريد الالكتروني';
                         }
+                        return null;
                       },
                     ),
                     Container(height: 10),
@@ -75,14 +76,7 @@ class _SignUpState extends State<SignUp> {
                       },
                     ),
                     Container(
-                      margin: const EdgeInsets.only(top: 10, bottom: 20),
-                      alignment: Alignment.topRight,
-                      child: const Text(
-                        "نسيت كلمة المرور ؟",
-                        style: TextStyle(
-                          fontSize: 14,
-                        ),
-                      ),
+                 height: 20,
                     ),
                   ],
                 ),
