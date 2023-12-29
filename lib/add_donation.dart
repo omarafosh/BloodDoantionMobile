@@ -15,22 +15,14 @@ class _AddDonationState extends State<AddDonation> {
       home: Directionality(
         textDirection: TextDirection.rtl,
         child: Scaffold(
-          floatingActionButton: FloatingActionButton(
-              backgroundColor: Colors.red,
-              child: Icon(
-                Icons.add,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.of(context).push(
-                    MaterialPageRoute(builder: (context) => AddDonation()));
-              }),
+           
           appBar: AppBar(
             backgroundColor: Colors.red,
             title: const Text(
               'حياة بدمك',
               style: TextStyle(color: Colors.white, fontFamily: "Cairo"),
             ),
+            
             leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {

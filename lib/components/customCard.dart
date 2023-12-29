@@ -19,7 +19,7 @@ class CustomCard extends StatelessWidget {
               style: TextStyle(fontSize: 14),
             ),
             Text(
-              "عمر احمد العفوش",
+              "محمد حسين العيسى",
               style: TextStyle(fontSize: 14, color: Colors.red),
             ),
           ],

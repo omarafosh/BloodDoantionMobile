@@ -85,14 +85,14 @@ class _HomeState extends State<Home> {
                 ),
                 ListTile(
                   title: Text('ملفي الشخصي'),
-                  leading: Icon(Icons.bloodtype_outlined),
+                  leading: Icon(Icons.person),
                   onTap: () {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => Profile()));
                   },
                 ),
                 ListTile(
-                  title: Text('تبرعاتي'),
+                  title: Text('تبرعاتي السابقة'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
                     Navigator.of(context)
@@ -100,8 +100,8 @@ class _HomeState extends State<Home> {
                   },
                 ),
                 ListTile(
-                  title: Text('رسائل الشكر'),
-                  leading: Icon(Icons.bloodtype_outlined),
+                  title: Text('صندوق البريد '),
+                  leading: Icon(Icons.mail),
                   onTap: () {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) => Thank()));
@@ -109,7 +109,7 @@ class _HomeState extends State<Home> {
                 ),
                 ListTile(
                   title: Text('حول البرنامج'),
-                  leading: Icon(Icons.bloodtype_outlined),
+                  leading: Icon(Icons.info),
                   onTap: () {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) => About()));
