@@ -1,8 +1,22 @@
-import 'package:blood_donation/components/customGroup.dart';
 import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
-  const CustomCard({super.key});
+  final String name;
+  final int age;
+  final String group;
+  final String gender;
+  final String phone;
+  final String available;
+  final bool isActive;
+  const CustomCard(
+      {super.key,
+      required this.name,
+      required this.age,
+      required this.group,
+      required this.gender,
+      required this.phone,
+      required this.available,
+      required this.isActive});
 
   @override
   Widget build(BuildContext context) {
@@ -13,13 +27,12 @@ class CustomCard extends StatelessWidget {
       child: ListTile(
         title: Row(
           children: [
-            
             Text(
               " الاسم : ",
               style: TextStyle(fontSize: 14),
             ),
             Text(
-              "محمد حسين العيسى",
+              name,
               style: TextStyle(fontSize: 14, color: Colors.red),
             ),
           ],
@@ -34,7 +47,8 @@ class CustomCard extends StatelessWidget {
               fit: BoxFit.fill,
             ),
             Text(
-              "A+",
+              group,
+              textDirection: TextDirection.ltr,
               style: TextStyle(
                   color: Colors.white,
                   fontSize: 18,
@@ -49,10 +63,11 @@ class CustomCard extends StatelessWidget {
             ),
             Row(children: [
               Text("العمر :"),
-              Text(" 39", style: TextStyle(fontSize: 14, color: Colors.red)),
+              Text(age.toString(),
+                  style: TextStyle(fontSize: 14, color: Colors.red)),
               SizedBox(width: 40),
               Text("الجنس :"),
-              Text(" ذكر", style: TextStyle(fontSize: 14, color: Colors.red)),
+              Text(gender, style: TextStyle(fontSize: 14, color: Colors.red)),
             ]),
             SizedBox(
               height: 5,
@@ -60,8 +75,9 @@ class CustomCard extends StatelessWidget {
             Row(
               children: [
                 Text("رقم الهاتف :"),
-                Text(" 709898589",
-                    style: TextStyle(fontSize: 14, color: Colors.red)),
+                Text(phone,
+                    style: TextStyle(fontSize: 14, color: Colors.red),
+                    textDirection: TextDirection.ltr),
               ],
             ),
             SizedBox(
@@ -70,7 +86,7 @@ class CustomCard extends StatelessWidget {
             Row(
               children: [
                 Text("متاح : "),
-                Text(" صباحا",
+                Text(available,
                     style: TextStyle(fontSize: 14, color: Colors.red)),
               ],
             )
@@ -90,7 +106,7 @@ class CustomCard extends StatelessWidget {
             Icon(
               Icons.circle,
               size: 15,
-              color: Colors.green[400],
+              color: isActive == true ? Colors.green[400] : Colors.red[400],
             ),
           ],
         ),

@@ -21,7 +21,10 @@ class _DonationState extends State<Donation> {
         child: Scaffold(
           floatingActionButton: FloatingActionButton(
               backgroundColor: Colors.red,
-            child: Icon(Icons.add,color: Colors.white,),
+              child: Icon(
+                Icons.add,
+                color: Colors.white,
+              ),
               onPressed: () {
                 Navigator.of(context).push(
                     MaterialPageRoute(builder: (context) => AddDonation()));
@@ -57,8 +60,13 @@ class _DonationState extends State<Donation> {
                 child: Container(
                   child: ListView(
                     children: [
-                      CustomCardDonation(),
-                      CustomCardDonation(),
+                      CustomCardDonation(
+                        id: "12313484334",
+                        hospital: "الحماد الحكومي" ,
+                        patient: "سمير محمد عواد",
+                        date: "27/09/2021",
+                        unit: 3,
+                      ),
                     ],
                   ),
                 ),

@@ -9,7 +9,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -24,7 +23,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  GlobalKey<ScaffoldState> ScaffoldKey=GlobalKey();
+  GlobalKey<ScaffoldState> ScaffoldKey = GlobalKey();
   @override
   void initState() {
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
@@ -44,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         key: ScaffoldKey,
         body: (FirebaseAuth.instance.currentUser != null &&
                 FirebaseAuth.instance.currentUser!.emailVerified)
-            ? Home()
+            ? Donation()
             : Login(),
       ),
       routes: {

@@ -95,8 +95,8 @@ class _HomeState extends State<Home> {
                   title: Text('تبرعاتي السابقة'),
                   leading: Icon(Icons.bloodtype_outlined),
                   onTap: () {
-                    Navigator.of(context)
-                        .push(MaterialPageRoute(builder: (context) => Donation()));
+                    Navigator.of(context).push(
+                        MaterialPageRoute(builder: (context) => Donation()));
                   },
                 ),
                 ListTile(
@@ -181,7 +181,26 @@ class _HomeState extends State<Home> {
               child: ListView(children: [
                 Container(
                   padding: EdgeInsets.all(10),
-                  child: Column(children: [CustomCard(), CustomCard()]),
+                  child: Column(children: [
+                    CustomCard(
+                      name: "سامي سمير المحمد",
+                      age: 39,
+                      available: "صباحا",
+                      gender: "ذكر",
+                      phone: "+966578456321",
+                      isActive: true,
+                      group: "A+",
+                    ),
+                     CustomCard(
+                      name: "خالد سمير المحمد",
+                      age: 25,
+                      available: "أي وقت",
+                      gender: "ذكر",
+                      phone: "+966578456321",
+                      isActive: false,
+                      group: "A-",
+                    )
+                  ]),
                 ),
               ]),
             ),

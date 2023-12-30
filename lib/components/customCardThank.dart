@@ -1,8 +1,11 @@
-import 'package:blood_donation/components/customGroup.dart';
 import 'package:flutter/material.dart';
 
 class CustomCardThank extends StatelessWidget {
-  const CustomCardThank({super.key});
+  final String name;
+  final String body;
+  final String date;
+  const CustomCardThank(
+      {super.key, required this.name, required this.body, required this.date});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,7 @@ class CustomCardThank extends StatelessWidget {
               style: TextStyle(fontSize: 13),
             ),
             Text(
-              "احمد سعيد الحاج علي",
+              name,
               style: TextStyle(fontSize: 13, color: Colors.red),
             ),
           ],
@@ -29,21 +32,25 @@ class CustomCardThank extends StatelessWidget {
             SizedBox(
               height: 5,
             ),
-        
-              Text("نشكر لكم بذلكم و جعلها الله في",style: TextStyle(fontSize: 13, color: Colors.blue)),
+            Text(body,
+                style: TextStyle(fontSize: 13, color: Colors.blue)),
             SizedBox(
               height: 5,
             ),
-           
             SizedBox(
               height: 10,
             ),
-            Text("12-12-2023",
-            style: TextStyle(
-                fontSize: 14, fontWeight: FontWeight.w700, color: Colors.green)),
+            Text(date,
+                style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w700,
+                    color: Colors.green)),
           ],
         ),
-     trailing: Icon(Icons.delete,color: Colors.red,),
+        trailing: Icon(
+          Icons.delete,
+          color: Colors.red,
+        ),
       ),
     );
   }

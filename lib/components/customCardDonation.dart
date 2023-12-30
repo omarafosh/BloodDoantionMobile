@@ -1,7 +1,18 @@
 import 'package:flutter/material.dart';
 
 class CustomCardDonation extends StatelessWidget {
-  const CustomCardDonation({super.key});
+  final String id;
+  final String patient;
+  final String hospital;
+  final String date;
+  final int unit;
+  const CustomCardDonation(
+      {super.key,
+      required this.id,
+      required this.patient,
+      required this.hospital,
+      required this.date,
+      required this.unit});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +29,7 @@ class CustomCardDonation extends StatelessWidget {
                 style: TextStyle(fontSize: 12),
               ),
               Text(
-                "213469798789",
+                id,
                 style: TextStyle(fontSize: 12, color: Colors.red),
               ),
             ]),
@@ -29,7 +40,7 @@ class CustomCardDonation extends StatelessWidget {
                   style: TextStyle(fontSize: 12),
                 ),
                 Text(
-                  "سمير محمد السعيد",
+                  patient,
                   style: TextStyle(fontSize: 12, color: Colors.red),
                 ),
               ],
@@ -40,14 +51,12 @@ class CustomCardDonation extends StatelessWidget {
           children: [
             Row(children: [
               Text("اسم المستشفى :", style: TextStyle(fontSize: 12)),
-              Text(" الحماد الحكومي",
-                  style: TextStyle(fontSize: 12, color: Colors.red)),
+              Text(hospital, style: TextStyle(fontSize: 12, color: Colors.red)),
             ]),
             Row(
               children: [
                 Text("تاريخ التبرع :", style: TextStyle(fontSize: 12)),
-                Text(" 12-11-2023",
-                    style: TextStyle(fontSize: 12, color: Colors.red)),
+                Text(date, style: TextStyle(fontSize: 12, color: Colors.red)),
               ],
             ),
           ],
@@ -64,7 +73,8 @@ class CustomCardDonation extends StatelessWidget {
                   size: 35,
                   color: Colors.white,
                 ),
-                Text("2", style: TextStyle(fontSize: 16, color: Colors.red))
+                Text(unit.toString(),
+                    style: TextStyle(fontSize: 16, color: Colors.red))
               ],
             ),
           ],

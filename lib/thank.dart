@@ -1,4 +1,5 @@
 import 'package:blood_donation/components/customCardThank.dart';
+import 'package:blood_donation/functions/general.dart';
 import 'package:flutter/material.dart';
 
 class Thank extends StatefulWidget {
@@ -23,7 +24,7 @@ class _ThankState extends State<Thank> {
               'حياة بدمك',
               style: TextStyle(color: Colors.white, fontFamily: "Cairo"),
             ),
-                 leading: IconButton(
+            leading: IconButton(
               icon: Icon(Icons.arrow_back),
               onPressed: () {
                 Navigator.pop(context); // يقوم بالانتقال إلى الصفحة السابقة
@@ -41,9 +42,13 @@ class _ThankState extends State<Thank> {
                 child: Container(
                   child: ListView(
                     children: [
-                      CustomCardThank(),
-                      CustomCardThank(),
-                      CustomCardThank()
+                      CustomCardThank(
+                        name: "سامر محمد سعيد",
+                        body: insertNewLineAfterCharacterCount(
+                            "نشكر لكم جهودكم و جعلها الله في ميزان حسناتكم",
+                            38),
+                        date: "12-12-2023",
+                      ),
                     ],
                   ),
                 ),
