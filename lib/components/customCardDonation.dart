@@ -73,7 +73,7 @@ class CustomCardDonation extends StatelessWidget {
                   size: 35,
                   color: Colors.white,
                 ),
-                Text(unit.toString(),
+                Text(unit.toString() ,
                     style: TextStyle(fontSize: 16, color: Colors.red))
               ],
             ),

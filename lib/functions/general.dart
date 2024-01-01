@@ -1,3 +1,5 @@
+
+
 String insertNewLineAfterCharacterCount(String text, int charCount) {
   StringBuffer buffer = StringBuffer();
   int count = 0;
@@ -14,3 +16,4 @@ String insertNewLineAfterCharacterCount(String text, int charCount) {
 
   return buffer.toString();
 }
+

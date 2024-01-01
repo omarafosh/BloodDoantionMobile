@@ -6,13 +6,14 @@ class CustomTextField extends StatefulWidget {
   final TextEditingController MyController;
   final TextInputType keyboardType;
   final String? Function(String?)? validator;
-
+  final  Function(String?)? onchange;
   const CustomTextField({
     Key? key,
     required this.hintText,
     required this.MyController,
     required this.keyboardType,
     this.validator,
+    this.onchange,
   }) : super(key: key);
 
   @override
@@ -32,6 +33,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
   Widget build(BuildContext context) {
     return TextFormField(
       validator: widget.validator,
+      onChanged: widget.onchange,
       keyboardType: selectedKeyboardType,
       // inputFormatters: <TextInputFormatter>[
       //   FilteringTextInputFormatter.allow(RegExp(r'[0-9]')),
@@ -41,7 +43,6 @@ class _CustomTextFieldState extends State<CustomTextField> {
       textDirection: TextDirection.rtl,
       controller: widget.MyController,
       decoration: InputDecoration(
-        
         contentPadding: EdgeInsets.symmetric(horizontal: 20),
         hintText: widget.hintText,
         hintStyle: TextStyle(fontSize: 14),
