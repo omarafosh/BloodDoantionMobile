@@ -1,11 +1,14 @@
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:blood_donation/components/customCardDonation.dart';
 import 'package:blood_donation/components/customTextField.dart';
+import 'package:blood_donation/functions/general.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+
 
 class Donation extends StatefulWidget {
   const Donation({super.key});
@@ -23,7 +26,7 @@ class _DonationState extends State<Donation> {
   }
 
   onSerachChanged() {
-   searchResultList();
+    searchResultList();
   }
 
   @override
@@ -34,26 +37,41 @@ class _DonationState extends State<Donation> {
 
   List _allResults = [];
   List _resultList = [];
-  
 
   searchResultList() {
     var temp = [];
-    if (SearchController.text!=""){
-      for (var dataSearch in _allResults){
-        var id=dataSearch['id'].toString().toLowerCase();
-        if (id.contains(SearchController.text.toLowerCase())){
+    if (SearchController.text != "") {
+      for (var dataSearch in _allResults) {
+        var id = dataSearch['id'].toString().toLowerCase();
+        if (id.contains(SearchController.text.toLowerCase())) {
           temp.add(dataSearch);
         }
       }
-
-    }else{
-      temp=List.from(_allResults);
+    } else {
+      temp = List.from(_allResults);
     }
     setState(() {
-      _resultList=temp;
+      _resultList = temp;
     });
   }
-void performSearch() async {
+
+  DateTime selectedDate = DateTime.now();
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null && picked != selectedDate) {
+      setState(() {
+        selectedDate = picked;
+        date.text = '${picked.day}/${picked.month}/${picked.year}'  ; // Set the picked date in the TextFormField
+      });
+    }
+  }
+
+  void performSearch() async {
     var data = await FirebaseFirestore.instance
         .collection('donations')
         .orderBy("date")
@@ -64,6 +82,7 @@ void performSearch() async {
     });
     searchResultList();
   }
+
   bool isNumeric(String str) {
     if (str == null) {
       return false;
@@ -88,7 +107,7 @@ void performSearch() async {
           'id': id.text,
           'patiant': patiant.text,
           'hospital': hospital.text,
-          'date': date.text,
+          'date': convertStringToDate(date.text.toString()),
           'unit': int.parse(unit.text),
         })
         .then((value) {})
@@ -101,7 +120,7 @@ void performSearch() async {
             desc: 'هناك خطأ بإدخال البيانات',
           ).show();
         });
-        performSearch();
+    performSearch();
   }
 
   @override
@@ -137,6 +156,7 @@ void performSearch() async {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CustomTextField(
+            
                         hintText: "الرقم الشخصي",
                         MyController: id,
                         keyboardType: TextInputType.number,
@@ -171,16 +191,30 @@ void performSearch() async {
                             return null;
                           }),
                       SizedBox(height: 2),
-                      CustomTextField(
-                          hintText: "تاريخ التبرع",
-                          MyController: date,
-                          keyboardType: TextInputType.datetime,
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'الرجاء إدخال  تاريخ التبرع  ';
-                            }
-                            return null;
-                          }),
+                      TextFormField(
+                        controller: date,
+                        onTap: () => _selectDate(
+                            context), // Open date picker when tapping on the TextFormField
+                        decoration: InputDecoration(
+  
+                          contentPadding: EdgeInsets.symmetric(horizontal: 20),
+                          hintText: "حدد تاريخ التبرع",
+                          hintStyle: TextStyle(fontSize: 14),
+                          filled: true,
+                          fillColor: Colors.white,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'الرجاء إدخال  تاريخ التبرع  ';
+                          }
+                          return null;
+                        },
+                        readOnly: true,
+                      ),
+                     
                       CustomTextField(
                           hintText: "عدد الوحدات",
                           MyController: unit,
@@ -200,12 +234,6 @@ void performSearch() async {
                   children: [
                     ElevatedButton(
                       onPressed: () {
-                        // Process the entered values
-
-                        // Do something with the values
-
-                        // Clear the text fields after processing
-
                         if (formstate.currentState!.validate()) {
                           // إذا كانت البيانات صحيحة، قم بمعالجتها
                           saveDonate();
@@ -292,7 +320,7 @@ void performSearch() async {
                         id: _resultList[index]['id'],
                         patient: _resultList[index]['patiant'],
                         hospital: _resultList[index]['hospital'],
-                        date: _resultList[index]['date'],
+                        date:formatFirestoreTimestamp(_resultList[index]['date']) ,
                         unit: _resultList[index]['unit'],
                       );
                     },

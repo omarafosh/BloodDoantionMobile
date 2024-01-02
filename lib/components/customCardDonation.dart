@@ -50,12 +50,12 @@ class CustomCardDonation extends StatelessWidget {
         subtitle: Column(
           children: [
             Row(children: [
-              Text("اسم المستشفى :", style: TextStyle(fontSize: 12)),
+              Text("اسم المستشفى : ", style: TextStyle(fontSize: 12)),
               Text(hospital, style: TextStyle(fontSize: 12, color: Colors.red)),
             ]),
             Row(
               children: [
-                Text("تاريخ التبرع :", style: TextStyle(fontSize: 12)),
+                Text("تاريخ التبرع : ", style: TextStyle(fontSize: 12)),
                 Text(date, style: TextStyle(fontSize: 12, color: Colors.red)),
               ],
             ),
@@ -73,7 +73,7 @@ class CustomCardDonation extends StatelessWidget {
                   size: 35,
                   color: Colors.white,
                 ),
-                Text(unit.toString() ,
+                Text(unit.toString(),
                     style: TextStyle(fontSize: 16, color: Colors.red))
               ],
             ),
