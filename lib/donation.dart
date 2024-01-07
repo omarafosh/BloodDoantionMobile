@@ -35,6 +35,14 @@ class _DonationState extends State<Donation> {
     super.didChangeDependencies();
   }
 
+  GlobalKey<FormState> formstate = GlobalKey<FormState>();
+  String Search = "";
+  TextEditingController SearchController = TextEditingController();
+  TextEditingController id = TextEditingController();
+  TextEditingController patiant = TextEditingController();
+  TextEditingController hospital = TextEditingController();
+  TextEditingController date = TextEditingController();
+  TextEditingController unit = TextEditingController();
   DateTime selectedDate = DateTime.now();
 
   bool is120DaysPassed(Timestamp donationTimestamp) {
@@ -91,8 +99,7 @@ class _DonationState extends State<Donation> {
     searchResultList();
   }
 
-  Future<int> calculateDateDifference(
-      DateTime storedDate, DateTime currentDate) async {
+  int calculateDateDifference(DateTime storedDate, DateTime currentDate) {
     Duration difference = currentDate.difference(storedDate);
     int daysDifference = difference.inDays.abs();
     return daysDifference;
@@ -117,58 +124,45 @@ class _DonationState extends State<Donation> {
     return null;
   }
 
-  Future<int> isWithin120Days(DateTime selectedDate) async {
+  Future<bool> isWithin120Days(DateTime selectedDate) async {
     final lastDonationSnapshot = await getLastDonation();
     if (lastDonationSnapshot == null) {
-      return 0;
+      return false;
     } else {
       final storedDate = lastDonationSnapshot.toDate();
       final currentDate = selectedDate;
 
-      int differenceInDays =
-          await calculateDateDifference(storedDate, currentDate);
+      int differenceInDays = calculateDateDifference(storedDate, currentDate);
       print(differenceInDays);
-      return differenceInDays <= 120 ? 1 : 0;
+      // التحقق من أن الفارق بالأيام أقل من 120 يوماً
+      return differenceInDays <= 120;
     }
   }
 
-  GlobalKey<FormState> formstate = GlobalKey<FormState>();
-  String Search = "";
-  TextEditingController SearchController = TextEditingController();
-  TextEditingController id = TextEditingController();
-  TextEditingController patiant = TextEditingController();
-  TextEditingController hospital = TextEditingController();
-  TextEditingController date = TextEditingController();
-  TextEditingController unit = TextEditingController();
   Future<void> saveDonate() async {
-    final canDonate = await isWithin120Days(selectedDate);
-    print(patiant.text);
-    if (canDonate == 0) {
-      CollectionReference donations =
-          FirebaseFirestore.instance.collection("donations");
-      await donations
-          .add({
-            'user_id': FirebaseAuth.instance.currentUser?.uid,
-            'id': id.text,
-            'patiant': patiant.text,
-            'hospital': hospital.text,
-            'date': selectedDate,
-            'unit': unit.text,
-            'isActive': false,
-          })
-          .then((value) {})
-          .catchError((error) {
-            AwesomeDialog(
-              context: context,
-              dialogType: DialogType.error,
-              animType: AnimType.rightSlide,
-              title: 'خطأ',
-              desc: 'هناك خطأ بإدخال البيانات',
-            ).show();
-          });
-    } else {
-      print("not can");
-    }
+    CollectionReference donations =
+        FirebaseFirestore.instance.collection("donations");
+    donations
+        .add({
+          'user_id': FirebaseAuth.instance.currentUser?.uid,
+          'id': id.text,
+          'patiant': patiant.text,
+          'hospital': hospital.text,
+          'date': selectedDate,
+          'unit': unit.text,
+          'isActive': false,
+        })
+        .then((value) {})
+        .catchError((error) {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.error,
+            animType: AnimType.rightSlide,
+            title: 'خطأ',
+            desc: 'هناك خطأ بإدخال البيانات',
+          ).show();
+        });
+
     performSearch();
   }
 
@@ -279,10 +273,18 @@ class _DonationState extends State<Donation> {
                 Row(
                   children: [
                     ElevatedButton(
-                      onPressed: () {
+                      onPressed: () async {
                         if (formstate.currentState!.validate()) {
                           // إذا كانت البيانات صحيحة، قم بمعالجتها
-                          saveDonate();
+                          var canDonate =
+                              await isWithin120Days(selectedDate).then((value) {
+                            if (!value) {
+                              saveDonate();
+                            } else {
+                              print("not can");
+                            }
+                          });
+
                           // معالجة القيم...
                           id.clear();
                           patiant.clear();
