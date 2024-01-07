@@ -1,3 +1,4 @@
+import 'dart:typed_data';
 
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:blood_donation/components/customCardDonation.dart';
@@ -8,7 +9,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 
 class Donation extends StatefulWidget {
   const Donation({super.key});
@@ -35,6 +35,15 @@ class _DonationState extends State<Donation> {
     super.didChangeDependencies();
   }
 
+  DateTime selectedDate = DateTime.now();
+
+  bool is120DaysPassed(Timestamp donationTimestamp) {
+    Timestamp currentTime = Timestamp.now();
+    Duration difference =
+        currentTime.toDate().difference(donationTimestamp.toDate());
+    return difference.inDays >= 120;
+  }
+
   List _allResults = [];
   List _resultList = [];
 
@@ -55,7 +64,6 @@ class _DonationState extends State<Donation> {
     });
   }
 
-  DateTime selectedDate = DateTime.now();
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -66,7 +74,7 @@ class _DonationState extends State<Donation> {
     if (picked != null && picked != selectedDate) {
       setState(() {
         selectedDate = picked;
-        date.text = '${picked.day}/${picked.month}/${picked.year}'  ; // Set the picked date in the TextFormField
+        date.text = '${picked.day}/${picked.month}/${picked.year}';
       });
     }
   }
@@ -83,11 +91,45 @@ class _DonationState extends State<Donation> {
     searchResultList();
   }
 
-  bool isNumeric(String str) {
-    if (str == null) {
-      return false;
+  Future<int> calculateDateDifference(
+      DateTime storedDate, DateTime currentDate) async {
+    Duration difference = currentDate.difference(storedDate);
+    int daysDifference = difference.inDays.abs();
+    return daysDifference;
+  }
+
+  Future<Timestamp?> getLastDonation() async {
+    final user_id = FirebaseAuth.instance.currentUser?.uid;
+    if (user_id != null) {
+      CollectionReference donations =
+          FirebaseFirestore.instance.collection('donations');
+
+      QuerySnapshot last_donate = await donations
+          .where('user_id', isEqualTo: user_id)
+          .orderBy("date", descending: true)
+          .limit(1)
+          .get();
+
+      if (last_donate.docs.isNotEmpty) {
+        return last_donate.docs.first['date'] as Timestamp;
+      }
     }
-    return double.tryParse(str) != null;
+    return null;
+  }
+
+  Future<int> isWithin120Days(DateTime selectedDate) async {
+    final lastDonationSnapshot = await getLastDonation();
+    if (lastDonationSnapshot == null) {
+      return 0;
+    } else {
+      final storedDate = lastDonationSnapshot.toDate();
+      final currentDate = selectedDate;
+
+      int differenceInDays =
+          await calculateDateDifference(storedDate, currentDate);
+      print(differenceInDays);
+      return differenceInDays <= 120 ? 1 : 0;
+    }
   }
 
   GlobalKey<FormState> formstate = GlobalKey<FormState>();
@@ -99,27 +141,34 @@ class _DonationState extends State<Donation> {
   TextEditingController date = TextEditingController();
   TextEditingController unit = TextEditingController();
   Future<void> saveDonate() async {
-    CollectionReference donations =
-        FirebaseFirestore.instance.collection("donations");
-    await donations
-        .add({
-          'user_id': FirebaseAuth.instance.currentUser?.uid,
-          'id': id.text,
-          'patiant': patiant.text,
-          'hospital': hospital.text,
-          'date': convertStringToDate(date.text.toString()),
-          'unit': int.parse(unit.text),
-        })
-        .then((value) {})
-        .catchError((error) {
-          AwesomeDialog(
-            context: context,
-            dialogType: DialogType.error,
-            animType: AnimType.rightSlide,
-            title: 'خطأ',
-            desc: 'هناك خطأ بإدخال البيانات',
-          ).show();
-        });
+    final canDonate = await isWithin120Days(selectedDate);
+    print(patiant.text);
+    if (canDonate == 0) {
+      CollectionReference donations =
+          FirebaseFirestore.instance.collection("donations");
+      await donations
+          .add({
+            'user_id': FirebaseAuth.instance.currentUser?.uid,
+            'id': id.text,
+            'patiant': patiant.text,
+            'hospital': hospital.text,
+            'date': selectedDate,
+            'unit': unit.text,
+            'isActive': false,
+          })
+          .then((value) {})
+          .catchError((error) {
+            AwesomeDialog(
+              context: context,
+              dialogType: DialogType.error,
+              animType: AnimType.rightSlide,
+              title: 'خطأ',
+              desc: 'هناك خطأ بإدخال البيانات',
+            ).show();
+          });
+    } else {
+      print("not can");
+    }
     performSearch();
   }
 
@@ -156,7 +205,6 @@ class _DonationState extends State<Donation> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       CustomTextField(
-            
                         hintText: "الرقم الشخصي",
                         MyController: id,
                         keyboardType: TextInputType.number,
@@ -196,7 +244,6 @@ class _DonationState extends State<Donation> {
                         onTap: () => _selectDate(
                             context), // Open date picker when tapping on the TextFormField
                         decoration: InputDecoration(
-  
                           contentPadding: EdgeInsets.symmetric(horizontal: 20),
                           hintText: "حدد تاريخ التبرع",
                           hintStyle: TextStyle(fontSize: 14),
@@ -214,7 +261,6 @@ class _DonationState extends State<Donation> {
                         },
                         readOnly: true,
                       ),
-                     
                       CustomTextField(
                           hintText: "عدد الوحدات",
                           MyController: unit,
@@ -320,8 +366,8 @@ class _DonationState extends State<Donation> {
                         id: _resultList[index]['id'],
                         patient: _resultList[index]['patiant'],
                         hospital: _resultList[index]['hospital'],
-                        date:formatFirestoreTimestamp(_resultList[index]['date']) ,
-                        unit: _resultList[index]['unit'],
+                        date: _resultList[index]['date'],
+                        unit: "2",
                       );
                     },
                   ),

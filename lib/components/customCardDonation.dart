@@ -1,11 +1,12 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class CustomCardDonation extends StatelessWidget {
   final String id;
   final String patient;
   final String hospital;
-  final String date;
-  final int unit;
+  final Timestamp date;
+  final String unit;
   const CustomCardDonation(
       {super.key,
       required this.id,
@@ -56,7 +57,9 @@ class CustomCardDonation extends StatelessWidget {
             Row(
               children: [
                 Text("تاريخ التبرع : ", style: TextStyle(fontSize: 12)),
-                Text(date, style: TextStyle(fontSize: 12, color: Colors.red)),
+                Text(
+                    '${date.toDate().day}-${date.toDate().month}-${date.toDate().year}',
+                    style: TextStyle(fontSize: 12, color: Colors.red)),
               ],
             ),
           ],
@@ -73,7 +76,7 @@ class CustomCardDonation extends StatelessWidget {
                   size: 35,
                   color: Colors.white,
                 ),
-                Text(unit.toString(),
+                Text(unit,
                     style: TextStyle(fontSize: 16, color: Colors.red))
               ],
             ),

@@ -1,25 +1,33 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-String convertDateToSTring(timeStamp) {
+// String convertDateToSTring(timeStamp) {
+//   return DateFormat("dd-MM-yyyy").format(timeStamp).toString();
+// }
+String convertStringToDateASTimestamp(DateTime date) {
+  DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+  return dateFormat.format(date);
+}
+Timestamp convertStringToDateASTimestamp1(dateString) {
+// استبدل هذا بالسلسلة النصية للتاريخ
 
-  return DateFormat("dd-MM-yyyy").format(timeStamp).toString();
+  DateFormat dateFormat = DateFormat('dd/MM/yyyy');
+
+  DateTime dateTime = dateFormat.parseLoose(dateString);
+
+  Timestamp timestamp = Timestamp.fromDate(dateTime);
+  return timestamp;
 }
 
-DateTime convertStringToDate(dateString){
-
-DateFormat format = DateFormat("dd/MM/yyyy");
-DateTime dateTime = format.parse(dateString);
-return dateTime;
-}
 String formatFirestoreTimestamp(Timestamp timestamp) {
   // تحويل Timestamp إلى DateTime
   DateTime dateTime = timestamp.toDate();
-  
+
   // تنسيق التاريخ وتحويله إلى الصيغة المطلوبة "dd/MM/yyyy"
   String formattedDate = DateFormat('dd/MM/yyyy').format(dateTime);
-  
+
   return formattedDate;
 }
 
@@ -41,26 +49,40 @@ String insertNewLineAfterCharacterCount(String text, int charCount) {
 }
 
 
-Future<void> fetchDonationData() async {
-  QuerySnapshot<Map<String, dynamic>> donationSnapshot =
-      await FirebaseFirestore.instance.collection('donations').get();
+ 
+  // Future<int> isWithin120Days() async {
+  //   final lastDonationSnapshot = await getLastDonation();
 
-  donationSnapshot.docs.forEach((doc) {
-    // يمكنك هنا القيام بالتحقق من الزمن وتحديث القيمة isActive إذا كان من المرتقب أن تمر 120 يومًا.
-    Timestamp donationTimestamp = doc['timestamp'];
-    bool isActive = doc['isActive'];
+  //   if (lastDonationSnapshot == null) {
+  //     // لا توجد تبرعات سابقة
+  //     return 0;
+  //   } else {
+  //     final storedDate = lastDonationSnapshot.toDate();
 
-    // قم بتحديث الحقل isActive بناءً على التحقق من انقضاء 120 يومًا من وقت التبرع
-    if (isActive && is120DaysPassed(donationTimestamp)) {
-      // تحديث الحقل isActive في Firestore
-      doc.reference.update({'isActive': false});
-    }
-  });
-}
+  //     final currentDate = convertStringToDateASTimestamp(DateTime.parse() ); // تفرض أن date.text يحتوي على تاريخ بتنسيق صحيح
 
-// دالة للتحقق مما إذا كان قد مر 120 يومًا من وقت التبرع
-bool is120DaysPassed(Timestamp donationTimestamp) {
-  Timestamp currentTime = Timestamp.now();
-  Duration difference = currentTime.toDate().difference(donationTimestamp.toDate());
-  return difference.inDays >= 120;
-}
+  //     int differenceInDays = await calculateDateDifference(storedDate);
+  //     print(differenceInDays);
+  //     // التحقق من أن الفارق بالأيام أقل من 120 يوماً
+  //     return differenceInDays <= 120 ? 1 : 0;
+  //   }
+  // }
+
+  // Future<void> fetchDonationData() async {
+  //   QuerySnapshot<Map<String, dynamic>> donationSnapshot =
+  //       await FirebaseFirestore.instance.collection('donations').get();
+
+  //   donationSnapshot.docs.forEach((doc) {
+  //     // يمكنك هنا القيام بالتحقق من الزمن وتحديث القيمة isActive إذا كان من المرتقب أن تمر 120 يومًا.
+  //     Timestamp donationTimestamp = doc['timestamp'];
+  //     bool isActive = doc['isActive'];
+
+  //     // قم بتحديث الحقل isActive بناءً على التحقق من انقضاء 120 يومًا من وقت التبرع
+  //     if (isActive && is120DaysPassed(donationTimestamp)) {
+  //       // تحديث الحقل isActive في Firestore
+  //       doc.reference.update({'isActive': false});
+  //     }
+  //   });
+  // }
+
+  
