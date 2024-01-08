@@ -68,7 +68,8 @@ class _ProfileState extends State<Profile> {
           'phone1': DonorPhone1.text,
           'phone2': DonorPhone2.text,
           'avilable': selectedAvailableOption ?? "صباحا",
-          'address': selectedCitiesOption ?? "الدوحة",
+          'city': selectedCitiesOption ?? "الدوحة",
+          'hospital': "الحماد",
           'isDonor': isChecked,
         })
         .then((value) {})

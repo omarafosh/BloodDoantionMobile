@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomCard extends StatelessWidget {
   final String name;
-  final int age;
+  final String age;
   final String group;
   final String gender;
   final String phone;
@@ -12,8 +12,8 @@ class CustomCard extends StatelessWidget {
       {super.key,
       required this.name,
       required this.age,
-      required this.group,
       required this.gender,
+      required this.group,
       required this.phone,
       required this.available,
       required this.isActive});

@@ -43,7 +43,7 @@ class _MyAppState extends State<MyApp> {
         key: ScaffoldKey,
         body: (FirebaseAuth.instance.currentUser != null &&
                 FirebaseAuth.instance.currentUser!.emailVerified)
-            ? Donation()
+            ? Home()
             : Login(),
       ),
       routes: {

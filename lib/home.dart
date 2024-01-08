@@ -51,13 +51,37 @@ class _HomeState extends State<Home> {
   ];
   bool isLoading = true;
   List<QueryDocumentSnapshot> data = [];
+  // getDonors() async {
+  //   QuerySnapshot query =
+  //       await FirebaseFirestore.instance.collection("donors").get();
+  //   data.addAll(query.docs);
+  //   print(data);
+  //   isLoading = false;
+  //   setState(() {});
+  // }
+
+  List _resultList = [];
+  // ignore: non_constant_identifier_names
+  var SearchCount;
   getDonors() async {
-    QuerySnapshot query =
-        await FirebaseFirestore.instance.collection("donors").get();
-    data.addAll(query.docs);
+    Query query = FirebaseFirestore.instance.collection("profile");
+
+    if (selectedCitiesOption != null) {
+      query = query.where('city', isEqualTo: selectedCitiesOption);
+    }
+
+    if (selectedBloodGroupOption != null) {
+      query = query.where('group', isEqualTo: selectedBloodGroupOption);
+    }
+
+    QuerySnapshot querySnapshot = await query.get();
+
+    data = querySnapshot.docs;
     print(data);
     isLoading = false;
-    setState(() {});
+    setState(() {
+      _resultList = data;
+    });
   }
 
   @override
@@ -154,6 +178,8 @@ class _HomeState extends State<Home> {
                     onSelected: (newValue) {
                       setState(() {
                         selectedCitiesOption = newValue;
+                        getDonors();
+                        SearchCount = data.length;
                       });
                     },
                   ),
@@ -167,6 +193,8 @@ class _HomeState extends State<Home> {
                     onSelected: (newValue) {
                       setState(() {
                         selectedBloodGroupOption = newValue;
+                        getDonors();
+                        SearchCount = data.length;
                       });
                     },
                   ),
@@ -174,35 +202,27 @@ class _HomeState extends State<Home> {
               ),
             ),
             Text(
-              "نتائج البحث : ",
+              "نتائج البحث : ${_resultList.length}",
             ),
             Expanded(
               flex: 3,
-              child: ListView(children: [
-                Container(
-                  padding: EdgeInsets.all(10),
-                  child: Column(children: [
-                    CustomCard(
-                      name: "سامي سمير المحمد",
-                      age: 39,
-                      available: "صباحا",
-                      gender: "ذكر",
-                      phone: "+966578456321",
-                      isActive: true,
-                      group: "A+",
-                    ),
-                     CustomCard(
-                      name: "خالد سمير المحمد",
-                      age: 25,
-                      available: "أي وقت",
-                      gender: "ذكر",
-                      phone: "+966578456321",
-                      isActive: false,
-                      group: "A-",
-                    )
-                  ]),
+              child: Container(
+                padding: EdgeInsets.all(15),
+                child: ListView.builder(
+                  itemCount: _resultList.length,
+                  itemBuilder: (context, index) {
+                    return CustomCard(
+                      name: _resultList[index]["name"],
+                      age: _resultList[index]["age"],
+                      group: _resultList[index]["group"],
+                      phone: _resultList[index]["phone1"],
+                      gender: _resultList[index]["gender"],
+                      isActive: _resultList[index]["isDonor"],
+                      available: _resultList[index]["avilable"],
+                    );
+                  },
                 ),
-              ]),
+              ),
             ),
           ]),
         ),
