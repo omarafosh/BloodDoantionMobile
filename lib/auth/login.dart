@@ -1,5 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'dart:io';
+
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:blood_donation/components/customButton.dart';
 import 'package:blood_donation/components/customLogoAuth.dart';
@@ -22,10 +24,15 @@ class _LoginState extends State<Login> {
   TextEditingController email = TextEditingController();
   TextEditingController password = TextEditingController();
   GlobalKey<FormState> formstate = GlobalKey<FormState>();
+
   Future<int> getItemCount() async {
     try {
+      final user_id = FirebaseAuth.instance.currentUser?.uid;
       QuerySnapshot<Map<String, dynamic>> querySnapshot =
-          await FirebaseFirestore.instance.collection('profile').get();
+          await FirebaseFirestore.instance
+              .collection('profile')
+              .where('user_id', isEqualTo: user_id)
+              .get();
       int count = querySnapshot.size; // Count of documents in the collection
       return count;
     } catch (e) {
@@ -33,6 +40,24 @@ class _LoginState extends State<Login> {
       return 0; // Return 0 on error
     }
   }
+
+  // Future signInWithApple() async {
+  //   try {
+  //     final appleIdCredential = await SignInWithApple.getAppleIDCredential(
+  //       scopes: [
+  //         AppleIDAuthorizationScopes.email,
+  //         AppleIDAuthorizationScopes.fullName,
+  //       ],
+  //     );
+  //     final oAuthProvider = OAuthProvider(providerId: 'apple.com');
+  //     final credential = oAuthProvider.getCredential(
+  //       idToken: appleIdCredential.identityToken,
+  //       accessToken: appleIdCredential.authorizationCode,
+  //     );
+  //     await FirebaseAuth.instance.signInWithCredential(credential);
+  //     print(credential);
+  //   } catch (e) {}
+  // }
 
   Future signInWithGoogle() async {
     // Trigger the authentication flow
@@ -51,16 +76,24 @@ class _LoginState extends State<Login> {
 
       // Once signed in, return the UserCredential
       await FirebaseAuth.instance.signInWithCredential(credential);
-      Navigator.of(context).pushReplacementNamed("home");
+
+      var user = FirebaseAuth.instance.currentUser;
+
+      if (user != null) {
+        int itemCount = await getItemCount();
+        itemCount == 0
+            // ignore: use_build_context_synchronously
+            ? Navigator.of(context).pushReplacementNamed("profile")
+            : Navigator.of(context).pushReplacementNamed("home");
+      }
     } catch (e) {
-         AwesomeDialog(
-                              context: context,
-                              dialogType: DialogType.error,
-                              animType: AnimType.rightSlide,
-                              title: 'خطأ',
-                              desc:
-                                  'هناك خطأ في بيانات تسجيل دخول Google',
-                            ).show();
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'خطأ',
+        desc: 'هناك خطأ في بيانات تسجيل دخول Google',
+      ).show();
     }
   }
 
@@ -86,12 +119,12 @@ class _LoginState extends State<Login> {
                         ),
                         CustomLogoAuth(),
                         Container(
-                          height: 20,
+                          height: 15,
                         ),
                         Text(
                           "تسجيل دخول",
                           style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 30),
+                              fontWeight: FontWeight.w600, fontSize: 25),
                         ),
                         Container(
                           height: 4,
@@ -120,14 +153,14 @@ class _LoginState extends State<Login> {
                           },
                         ),
                         Container(
-                          height: 15,
+                          height: 10,
                         ),
                         Text(
                           "كلمة المرور",
                           style: TextStyle(fontWeight: FontWeight.w600),
                         ),
                         Container(
-                          height: 15,
+                          height: 10,
                         ),
                         CustomTextField(
                             hintText: "ادخل كلمة المرور",
@@ -139,12 +172,35 @@ class _LoginState extends State<Login> {
                               }
                               return null;
                             }),
-                        Container(height: 15),
+                        Container(height: 10),
                         Container(
                           margin: EdgeInsets.only(top: 10, bottom: 15),
                           alignment: Alignment.topRight,
-                          child: Text(
-                            "نسيت كلمة المرور ؟",
+                          child: InkWell(
+                            child: Text("نسيت كلمة المرور ؟"),
+                            onTap: () async {
+                              try {
+                                await FirebaseAuth.instance
+                                    .sendPasswordResetEmail(email: email.text);
+                                AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.info,
+                                  animType: AnimType.rightSlide,
+                                  title: 'تنويه',
+                                  desc:
+                                      'لقد تم ارسال الرابط الى البريد الالكتروني الخاص بك',
+                                ).show();
+                              } catch (e) {
+                                AwesomeDialog(
+                                  context: context,
+                                  dialogType: DialogType.error,
+                                  animType: AnimType.rightSlide,
+                                  title: 'خطأ',
+                                  desc:
+                                      'الرجاء ادخال البريد الالكتروني الخاص بك',
+                                ).show();
+                              }
+                            },
                           ),
                         ),
                       ]),
@@ -203,17 +259,11 @@ class _LoginState extends State<Login> {
                         }
                       }
                     }),
-                Container(height: 10),
-                // InkWell(
-                //   onTap: () async {
-                //     await FirebaseAuth.instance
-                //         .sendPasswordResetEmail(email: email.text);
-                //   },
-                // ),
+                Container(height: 5),
                 MaterialButton(
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20)),
-                  color: Colors.red[200],
+                  color: Colors.orange,
                   textColor: Colors.white,
                   onPressed: () {
                     try {
@@ -231,7 +281,36 @@ class _LoginState extends State<Login> {
                   child:
                       Center(child: Text("تسجيل الدخول ياستخدام حساب Google")),
                 ),
-                Container(height: 15),
+                Container(height: 5),
+                Container(
+                  child: Platform.isIOS
+                      ? MaterialButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(20)),
+                          color: Colors.black,
+                          textColor: Colors.white,
+                          onPressed: () {
+                            try {
+                              signInWithApple();
+                            } catch (e) {
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.error,
+                                animType: AnimType.rightSlide,
+                                title: 'خطأ',
+                                desc: 'تاكد من انك متصل بالانترنت',
+                              ).show();
+                            }
+                          },
+                          child: Center(
+                              child: Text(
+                            "تسجيل الدخول ياستخدام حساب Apple",
+                            style: TextStyle(color: Colors.white),
+                          )),
+                        )
+                      : null,
+                ),
+                Container(height: 8),
                 InkWell(
                     onTap: () {
                       Navigator.of(context).pushReplacementNamed("signup");
@@ -252,3 +331,5 @@ class _LoginState extends State<Login> {
     );
   }
 }
+
+void signInWithApple() {}

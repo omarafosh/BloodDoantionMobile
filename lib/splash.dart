@@ -1,6 +1,9 @@
+import 'package:blood_donation/auth/login.dart';
+import 'package:blood_donation/auth/signup.dart';
+import 'package:blood_donation/components/customButton.dart';
 import 'package:flutter/material.dart';
 
-class About extends StatelessWidget {
+class Splash extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final Size screenSize = MediaQuery.of(context).size;
@@ -15,15 +18,6 @@ class About extends StatelessWidget {
               'حياة بدمك',
               style: TextStyle(color: Colors.white, fontFamily: "Cairo"),
             ),
-            leading: IconButton(
-              icon: Icon(
-                Icons.arrow_back,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
           ),
           body: Padding(
             padding: EdgeInsets.all(30.0),
@@ -35,7 +29,7 @@ class About extends StatelessWidget {
                   width: 130,
                 ),
                 SizedBox(
-                  height: 20,
+                  height: screenSize.height * 0.01,
                 ),
                 Column(
                   children: [
@@ -69,6 +63,24 @@ class About extends StatelessWidget {
                 ),
                 SizedBox(
                   height: screenSize.height * 0.01,
+                ),
+                ListTile(
+                  title: Column(children: [
+                    CustomButton(
+                      title: "تسجيل عضوية",
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => SignUp()));
+                      },
+                    ),
+                    CustomButton(
+                      title: "تسجيل دخول ",
+                      onPressed: () {
+                        Navigator.of(context).push(
+                            MaterialPageRoute(builder: (context) => Login()));
+                      },
+                    )
+                  ]),
                 ),
               ],
             ),

@@ -1,4 +1,6 @@
+import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CustomCardDonation extends StatelessWidget {
@@ -7,16 +9,23 @@ class CustomCardDonation extends StatelessWidget {
   final String hospital;
   final Timestamp date;
   final String unit;
-  const CustomCardDonation(
-      {super.key,
-      required this.id,
-      required this.patient,
-      required this.hospital,
-      required this.date,
-      required this.unit});
+  final String doc_id;
+  final Function() onDelete;
+
+  const CustomCardDonation({
+    super.key,
+    required this.id,
+    required this.patient,
+    required this.hospital,
+    required this.date,
+    required this.unit,
+    required this.doc_id,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
     return Card(
       elevation: 1,
       color: Colors.grey[100],
@@ -27,22 +36,22 @@ class CustomCardDonation extends StatelessWidget {
             Row(children: [
               Text(
                 " الرقم الشخصي : ",
-                style: TextStyle(fontSize: 12),
+                style: TextStyle(fontSize: 14),
               ),
               Text(
                 id,
-                style: TextStyle(fontSize: 12, color: Colors.red),
+                style: TextStyle(fontSize: 14, color: Colors.red),
               ),
             ]),
             Row(
               children: [
                 Text(
                   " اسم المريض : ",
-                  style: TextStyle(fontSize: 12),
+                  style: TextStyle(fontSize: 14),
                 ),
                 Text(
                   patient,
-                  style: TextStyle(fontSize: 12, color: Colors.red),
+                  style: TextStyle(fontSize: 14, color: Colors.red),
                 ),
               ],
             )
@@ -51,35 +60,52 @@ class CustomCardDonation extends StatelessWidget {
         subtitle: Column(
           children: [
             Row(children: [
-              Text("اسم المستشفى : ", style: TextStyle(fontSize: 12)),
-              Text(hospital, style: TextStyle(fontSize: 12, color: Colors.red)),
+              Text("اسم المستشفى : ", style: TextStyle(fontSize: 14)),
+              Text(hospital, style: TextStyle(fontSize: 14, color: Colors.red)),
             ]),
+            SizedBox(
+              height: 5,
+            ),
             Row(
               children: [
-                Text("تاريخ التبرع : ", style: TextStyle(fontSize: 12)),
+                Text("تاريخ التبرع : ", style: TextStyle(fontSize: 14)),
                 Text(
                     '${date.toDate().day}-${date.toDate().month}-${date.toDate().year}',
-                    style: TextStyle(fontSize: 12, color: Colors.red)),
+                    style: TextStyle(fontSize: 14, color: Colors.red)),
               ],
             ),
-          ],
-        ),
-        trailing: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            Text("عدد الوحدات", style: TextStyle(fontSize: 12)),
-            Stack(
-              alignment: Alignment.center,
+            SizedBox(
+              height: 5,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Icon(
-                  Icons.circle,
-                  size: 35,
-                  color: Colors.white,
+                Row(
+                  children: [
+                    Text("الوحدات", style: TextStyle(fontSize: 14)),
+                    SizedBox(
+                      width: 8,
+                    ),
+                    Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        const Icon(
+                          Icons.circle,
+                          size: 25,
+                          color: Colors.white,
+                        ),
+                        Text(unit,
+                            style: TextStyle(fontSize: 14, color: Colors.red)),
+                      ],
+                    ),
+                  ],
                 ),
-                Text(unit,
-                    style: TextStyle(fontSize: 16, color: Colors.red))
+                InkWell(
+                  child: Icon(Icons.delete, size: 25, color: Colors.red),
+                  onTap: onDelete,
+                ),
               ],
-            ),
+            )
           ],
         ),
       ),

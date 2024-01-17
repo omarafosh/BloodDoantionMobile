@@ -1,6 +1,7 @@
 {
   "project_info": {
     "project_number": "125620944035",
+    "firebase_url": "https://blooddonationqatar-default-rtdb.firebaseio.com",
     "project_id": "blooddonationqatar",
     "storage_bucket": "blooddonationqatar.appspot.com"
   },
@@ -12,7 +13,20 @@
           "package_name": "com.example.blood_donation"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "125620944035-2r7cvccvvck7kivn74jsdaosu5q693j8.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.blood_donation",
+            "certificate_hash": "ec45c81a0424d423ffa6309b5a1218fa296aae56"
+          }
+        },
+        {
+          "client_id": "125620944035-eve8rq3m9ne2vfaojfe04sdf8k4hugto.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyAxI4gcFkwkEXLHJfc2EvvFw9fJuyjlp7k"
@@ -20,7 +34,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "125620944035-eve8rq3m9ne2vfaojfe04sdf8k4hugto.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

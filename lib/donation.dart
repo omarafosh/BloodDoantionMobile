@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:awesome_dialog/awesome_dialog.dart';
 import 'package:blood_donation/components/customCardDonation.dart';
 import 'package:blood_donation/components/customTextField.dart';
@@ -18,6 +16,7 @@ class Donation extends StatefulWidget {
 }
 
 class _DonationState extends State<Donation> {
+  // final DataContoller dataController = Get.find();
   @override
   void initState() {
     performSearch();
@@ -88,82 +87,82 @@ class _DonationState extends State<Donation> {
   }
 
   void performSearch() async {
-    var data = await FirebaseFirestore.instance
+    var user_id = FirebaseAuth.instance.currentUser?.uid;
+    QuerySnapshot data = await FirebaseFirestore.instance
         .collection('donations')
-        .orderBy("date")
+        .where('user_id', isEqualTo: user_id)
+        .orderBy('date', descending: true)
         .get();
 
     setState(() {
       _allResults = data.docs;
+      searchResultList();
     });
-    searchResultList();
-  }
-
-  int calculateDateDifference(DateTime storedDate, DateTime currentDate) {
-    Duration difference = currentDate.difference(storedDate);
-    int daysDifference = difference.inDays.abs();
-    return daysDifference;
-  }
-
-  Future<Timestamp?> getLastDonation() async {
-    final user_id = FirebaseAuth.instance.currentUser?.uid;
-    if (user_id != null) {
-      CollectionReference donations =
-          FirebaseFirestore.instance.collection('donations');
-
-      QuerySnapshot last_donate = await donations
-          .where('user_id', isEqualTo: user_id)
-          .orderBy("date", descending: true)
-          .limit(1)
-          .get();
-
-      if (last_donate.docs.isNotEmpty) {
-        return last_donate.docs.first['date'] as Timestamp;
-      }
-    }
-    return null;
-  }
-
-  Future<bool> isWithin120Days(DateTime selectedDate) async {
-    final lastDonationSnapshot = await getLastDonation();
-    if (lastDonationSnapshot == null) {
-      return false;
-    } else {
-      final storedDate = lastDonationSnapshot.toDate();
-      final currentDate = selectedDate;
-
-      int differenceInDays = calculateDateDifference(storedDate, currentDate);
-      print(differenceInDays);
-      // التحقق من أن الفارق بالأيام أقل من 120 يوماً
-      return differenceInDays <= 120;
-    }
   }
 
   Future<void> saveDonate() async {
     CollectionReference donations =
         FirebaseFirestore.instance.collection("donations");
-    donations
-        .add({
-          'user_id': FirebaseAuth.instance.currentUser?.uid,
-          'id': id.text,
-          'patiant': patiant.text,
-          'hospital': hospital.text,
-          'date': selectedDate,
-          'unit': unit.text,
-          'isActive': false,
-        })
-        .then((value) {})
-        .catchError((error) {
+
+    DocumentReference docRef = await donations.add({
+      'user_id': FirebaseAuth.instance.currentUser?.uid,
+      'id': id.text,
+      'patiant': patiant.text,
+      'hospital': hospital.text,
+      'date': selectedDate,
+      'unit': unit.text,
+      'isActive': true,
+    });
+
+// استخدام معرّف الوثيقة الجديدة في الحفظ
+    await docRef.update({
+      'doc_id': docRef.id,
+    }).then((value) {
+      performSearch();
+    }).catchError((error) {
+      AwesomeDialog(
+        context: context,
+        dialogType: DialogType.error,
+        animType: AnimType.rightSlide,
+        title: 'خطأ',
+        desc: 'هناك خطأ بإدخال البيانات',
+      ).show();
+    });
+  }
+
+  void deleteDonation(String docId, int index) async {
+    AwesomeDialog(
+      context: context,
+      dialogType: DialogType.question,
+      animType: AnimType.rightSlide,
+      title: 'هل انت متأكد من عملية الحذف ؟',
+      btnOkOnPress: () async {
+        setState(() {
+          _resultList.removeAt(index);
+        });
+        await FirebaseFirestore.instance
+            .collection("donations")
+            .doc(docId)
+            .delete()
+            .then((value) {
+          AwesomeDialog(
+            context: context,
+            dialogType: DialogType.success,
+            animType: AnimType.rightSlide,
+            title: 'تم الحذف بنجاح',
+          ).show();
+        }).catchError((error) {
           AwesomeDialog(
             context: context,
             dialogType: DialogType.error,
             animType: AnimType.rightSlide,
             title: 'خطأ',
-            desc: 'هناك خطأ بإدخال البيانات',
+            desc: 'حدثت مشكلة أثناء الحذف',
           ).show();
         });
-
-    performSearch();
+      },
+      btnCancelOnPress: () {},
+    ).show();
   }
 
   @override
@@ -280,18 +279,25 @@ class _DonationState extends State<Donation> {
                               await isWithin120Days(selectedDate).then((value) {
                             if (!value) {
                               saveDonate();
+                              id.clear();
+                              patiant.clear();
+                              hospital.clear();
+                              date.clear();
+                              unit.clear();
+                              Navigator.of(context).pop();
                             } else {
-                              print("not can");
+                              AwesomeDialog(
+                                context: context,
+                                dialogType: DialogType.warning,
+                                animType: AnimType.rightSlide,
+                                title: 'تنبيه',
+                                desc:
+                                    'لا يمكن تسجيل عملية التبرع لانه لم يمضي اكثر من 120 يوم',
+                              ).show();
                             }
                           });
 
                           // معالجة القيم...
-                          id.clear();
-                          patiant.clear();
-                          hospital.clear();
-                          date.clear();
-                          unit.clear();
-                          Navigator.of(context).pop();
                         }
                         // Close the dialog on submit
                       },
@@ -335,14 +341,17 @@ class _DonationState extends State<Donation> {
               }),
           appBar: AppBar(
             backgroundColor: Colors.red,
-            title: const Text(
+            title: Text(
               'حياة بدمك',
               style: TextStyle(color: Colors.white, fontFamily: "Cairo"),
             ),
             leading: IconButton(
-              icon: Icon(Icons.arrow_back),
+              icon: Icon(
+                Icons.arrow_back,
+                color: Colors.white,
+              ),
               onPressed: () {
-                Navigator.pop(context); // يقوم بالانتقال إلى الصفحة السابقة
+                Navigator.of(context).pop();
               },
             ),
           ),
@@ -370,6 +379,10 @@ class _DonationState extends State<Donation> {
                         hospital: _resultList[index]['hospital'],
                         date: _resultList[index]['date'],
                         unit: "2",
+                        doc_id: _resultList[index]['doc_id'],
+                        onDelete: () {
+                          deleteDonation(_resultList[index]['doc_id'], index);
+                        },
                       );
                     },
                   ),

@@ -1,34 +1,48 @@
 import 'package:blood_donation/about.dart';
 import 'package:blood_donation/components/customCard.dart';
-import 'package:blood_donation/components/customCardThank.dart';
 import 'package:blood_donation/components/customDropDown.dart';
-import 'package:blood_donation/components/customGroup.dart';
 import 'package:blood_donation/donation.dart';
+import 'package:blood_donation/functions/general.dart';
 import 'package:blood_donation/profile.dart';
+import 'package:blood_donation/profile_edit.dart';
 import 'package:blood_donation/thank.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class Home extends StatefulWidget {
-  const Home({super.key});
-  @override
-  State<Home> createState() => _HomeState();
-}
+class HomeController extends GetxController {
+  var selectedCitiesOption = 'الكل'.obs;
+  var selectedBloodGroupOption = 'الكل'.obs;
+  var isLoading = true.obs;
+  var resultList = [].obs;
+  var isActive = true.obs;
+  var islevel = 0.obs;
 
-class _HomeState extends State<Home> {
-  // يمكنك الوصول إلى متغير الحالة العامة من أي مكان باستخدام Provider.of<AppData>(context)
+  Future<bool> getIsActiveValue() async {
+    // الحصول على معرف المستخدم الحالي
+    String? currentUserUID = FirebaseAuth.instance.currentUser?.uid;
 
-  int selectedIndex = 0;
-  TextEditingController address = TextEditingController();
-  TextEditingController group = TextEditingController();
+    if (currentUserUID != null) {
+      QuerySnapshot snapshot = await FirebaseFirestore.instance
+          .collection('profile')
+          .where("user_id", isEqualTo: currentUserUID)
+          .get();
 
-// لتحديث قيمة المتغير العام
+      // التحقق مما إذا كان هناك قيمة مخزنة في الحقل isActive
+      if (snapshot.docs.isNotEmpty && snapshot.docs.first != null) {
+        isActive.value = snapshot.docs.first["isActive"];
+        isActive.refresh();
 
-  String? selectedCitiesOption;
+        return isActive.value;
+      }
+    }
+    return false; // قيمة افتراضية في حالة عدم وجود الوثيقة أو الحقل
+  }
 
-  List<String> CitiesOptions = [
+  final List<String> CitiesOptions = [
+    'الكل',
     'الدوحة',
     'الخور',
     'الشمال',
@@ -38,8 +52,9 @@ class _HomeState extends State<Home> {
     'مسيعيد',
     'الشيخانية'
   ];
-  String? selectedBloodGroupOption;
-  List<String> bloodGroupOptions = [
+
+  final List<String> bloodGroupOptions = [
+    'الكل',
     'A+',
     'A-',
     'B+',
@@ -49,49 +64,69 @@ class _HomeState extends State<Home> {
     'AB+',
     'AB-'
   ];
-  bool isLoading = true;
-  List<QueryDocumentSnapshot> data = [];
-  // getDonors() async {
-  //   QuerySnapshot query =
-  //       await FirebaseFirestore.instance.collection("donors").get();
-  //   data.addAll(query.docs);
-  //   print(data);
-  //   isLoading = false;
-  //   setState(() {});
-  // }
+  @override
+  void onInit() {
+    super.onInit();
+    getIsActiveValue();
+    getDonors(); // ابدأ بجلب البيانات عند فتح الصفحة
+  }
 
-  List _resultList = [];
-  // ignore: non_constant_identifier_names
-  var SearchCount;
-  getDonors() async {
+  void getDonors() async {
+    var user_id = await FirebaseAuth.instance.currentUser!.uid;
     Query query = FirebaseFirestore.instance.collection("profile");
 
-    if (selectedCitiesOption != null) {
-      query = query.where('city', isEqualTo: selectedCitiesOption);
+    if (selectedCitiesOption.value != 'الكل') {
+      query = query.where('city', isEqualTo: selectedCitiesOption.value);
     }
 
-    if (selectedBloodGroupOption != null) {
-      query = query.where('group', isEqualTo: selectedBloodGroupOption);
+    if (selectedBloodGroupOption.value != 'الكل') {
+      query = query.where('group', isEqualTo: selectedBloodGroupOption.value);
     }
 
-    QuerySnapshot querySnapshot = await query.get();
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('profile')
+        .where('user_id',
+            isNotEqualTo: user_id) // استبعاد بيانات المستخدم الحالي
+        .where('isDonor', isEqualTo: true) // فقط المستخدمين المتبرعين
+        .orderBy('user_id', descending: true)
+        .orderBy('isEvaluation', descending: true)
+        .orderBy('isActive', descending: true)
+        .get();
 
-    data = querySnapshot.docs;
-    print(data);
-    isLoading = false;
-    setState(() {
-      _resultList = data;
+    if (selectedCitiesOption.value == 'الكل' &&
+        selectedBloodGroupOption.value == 'الكل') {
+      resultList.value = querySnapshot.docs;
+    } else {
+      resultList.value = querySnapshot.docs;
+    }
+
+    isLoading.value = false;
+  }
+
+  void updateDonorStatus() async {
+    QuerySnapshot donorSnapshot =
+        await FirebaseFirestore.instance.collection('profile').get();
+    donorSnapshot.docs.forEach((doc) {
+      if (isWithin120Days(Timestamp.now().toDate()) == true) {
+        FirebaseFirestore.instance.collection('profile').doc(doc.id).update({
+          'isActive': true,
+        });
+      } else {
+        FirebaseFirestore.instance.collection('profile').doc(doc.id).update({
+          'isActive': false,
+        });
+      }
     });
   }
+}
 
-  @override
-  void initState() {
-    getDonors();
-    super.initState();
-  }
+class Home extends StatelessWidget {
+  final HomeController controller = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
+    final Size screenSize = MediaQuery.of(context).size;
+
     return MaterialApp(
       theme: ThemeData(fontFamily: 'Cairo'),
       home: Directionality(
@@ -100,24 +135,62 @@ class _HomeState extends State<Home> {
           drawer: Drawer(
             child: ListView(
               children: [
+                Container(
+                  height: 200,
+                  color: Colors.red,
+                  child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Image.asset(
+                        //   "images/logo.jpg",
+                        //   width: 50,
+                        //   height: 50,
+                        // ),
+                        // SizedBox(
+                        //   height: 20,
+                        // ),
+                        Text(
+                          FirebaseAuth.instance.currentUser!.displayName
+                              .toString(),
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                        Text(
+                          FirebaseAuth.instance.currentUser!.email.toString(),
+                          style: TextStyle(color: Colors.white, fontSize: 18),
+                        ),
+                      ]),
+                ),
                 ListTile(
                   title: Text('الصفحة الرئيسية'),
-                  leading: Icon(Icons.home),
+                  leading: Icon(
+                    Icons.home,
+                    color: Colors.red,
+                    size: 32,
+                  ),
                   onTap: () {
                     Navigator.of(context).pushReplacementNamed("home");
                   },
                 ),
                 ListTile(
                   title: Text('ملفي الشخصي'),
-                  leading: Icon(Icons.person),
+                  leading: Icon(
+                    Icons.person,
+                    color: Colors.red,
+                    size: 32,
+                  ),
                   onTap: () {
                     Navigator.of(context).push(
-                        MaterialPageRoute(builder: (context) => Profile()));
+                        MaterialPageRoute(builder: (context) => ProfileEdit()));
                   },
                 ),
                 ListTile(
                   title: Text('تبرعاتي السابقة'),
-                  leading: Icon(Icons.bloodtype_outlined),
+                  leading: Icon(
+                    Icons.bloodtype_outlined,
+                    color: Colors.red,
+                    size: 32,
+                  ),
                   onTap: () {
                     Navigator.of(context).push(
                         MaterialPageRoute(builder: (context) => Donation()));
@@ -125,7 +198,11 @@ class _HomeState extends State<Home> {
                 ),
                 ListTile(
                   title: Text('صندوق البريد '),
-                  leading: Icon(Icons.mail),
+                  leading: Icon(
+                    Icons.mail,
+                    color: Colors.red,
+                    size: 32,
+                  ),
                   onTap: () {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) => Thank()));
@@ -133,7 +210,11 @@ class _HomeState extends State<Home> {
                 ),
                 ListTile(
                   title: Text('حول البرنامج'),
-                  leading: Icon(Icons.info),
+                  leading: Icon(
+                    Icons.info,
+                    color: Colors.red,
+                    size: 32,
+                  ),
                   onTap: () {
                     Navigator.of(context)
                         .push(MaterialPageRoute(builder: (context) => About()));
@@ -144,7 +225,7 @@ class _HomeState extends State<Home> {
           ),
           appBar: AppBar(
             title: const Text(
-              'Blood Donation Qatar',
+              'حياة بدمك',
               style: TextStyle(color: Colors.white),
             ),
             actions: [
@@ -161,70 +242,77 @@ class _HomeState extends State<Home> {
             ],
             backgroundColor: Colors.red,
           ),
-          body: Column(children: [
-            Expanded(
-              flex: 1,
-              child: Container(
-                padding: EdgeInsets.all(10),
-                color: Colors.white,
-                child: Column(children: [
-                  SizedBox(
-                    height: 20,
+          body: Obx(
+            () => Column(
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    color: Colors.white,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: screenSize.height * 0.01,
+                        ),
+                        CustomDropdownMenu(
+                          initialSelection:
+                              controller.selectedCitiesOption.value,
+                          menuEntries: controller.CitiesOptions,
+                          onSelected: (newValue) {
+                            controller.selectedCitiesOption.value =
+                                newValue.toString();
+                            controller.getDonors();
+                          },
+                        ),
+                        SizedBox(
+                          height: screenSize.height * 0.01,
+                        ),
+                        CustomDropdownMenu(
+                          initialSelection:
+                              controller.selectedBloodGroupOption.value,
+                          menuEntries: controller.bloodGroupOptions,
+                          onSelected: (newValue) {
+                            controller.selectedBloodGroupOption.value =
+                                newValue.toString();
+                            controller.getDonors();
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                  CustomDropdownMenu(
-                    initialSelection:
-                        selectedCitiesOption ?? CitiesOptions.first,
-                    menuEntries: CitiesOptions,
-                    onSelected: (newValue) {
-                      setState(() {
-                        selectedCitiesOption = newValue;
-                        getDonors();
-                        SearchCount = data.length;
-                      });
-                    },
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                  CustomDropdownMenu(
-                    initialSelection:
-                        selectedBloodGroupOption ?? bloodGroupOptions.first,
-                    menuEntries: bloodGroupOptions,
-                    onSelected: (newValue) {
-                      setState(() {
-                        selectedBloodGroupOption = newValue;
-                        getDonors();
-                        SearchCount = data.length;
-                      });
-                    },
-                  ),
-                ]),
-              ),
-            ),
-            Text(
-              "نتائج البحث : ${_resultList.length}",
-            ),
-            Expanded(
-              flex: 3,
-              child: Container(
-                padding: EdgeInsets.all(15),
-                child: ListView.builder(
-                  itemCount: _resultList.length,
-                  itemBuilder: (context, index) {
-                    return CustomCard(
-                      name: _resultList[index]["name"],
-                      age: _resultList[index]["age"],
-                      group: _resultList[index]["group"],
-                      phone: _resultList[index]["phone1"],
-                      gender: _resultList[index]["gender"],
-                      isActive: _resultList[index]["isDonor"],
-                      available: _resultList[index]["avilable"],
-                    );
-                  },
                 ),
-              ),
+                Text(
+                  "نتائج البحث : ${controller.resultList.length}",
+                  textDirection: TextDirection.rtl,
+                ),
+                Expanded(
+                  flex: 3,
+                  child: Container(
+                    padding: EdgeInsets.all(15),
+                    child: Obx(
+                      () => ListView.builder(
+                        itemCount: controller.resultList.length,
+                        itemBuilder: (context, index) {
+                          return CustomCard(
+                            message_id: controller.resultList[index]["user_id"],
+                            name: controller.resultList[index]["name"],
+                            age: controller.resultList[index]["age"],
+                            group: controller.resultList[index]["group"],
+                            phone: controller.resultList[index]["phone1"],
+                            gender: controller.resultList[index]["gender"],
+                            isActive: controller.isActive.value,
+                            isEvaluation: controller.islevel.value,
+                            available: controller.resultList[index]["avilable"],
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ]),
+          ),
         ),
       ),
     );

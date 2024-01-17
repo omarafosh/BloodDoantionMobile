@@ -1,10 +1,9 @@
 import 'package:blood_donation/about.dart';
-import 'package:blood_donation/donation.dart';
 import 'package:blood_donation/profile.dart';
 import 'package:blood_donation/auth/login.dart';
 import 'package:blood_donation/auth/signup.dart';
 import 'package:blood_donation/home.dart';
-import 'package:blood_donation/thank.dart';
+import 'package:blood_donation/splash.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -44,11 +43,12 @@ class _MyAppState extends State<MyApp> {
         body: (FirebaseAuth.instance.currentUser != null &&
                 FirebaseAuth.instance.currentUser!.emailVerified)
             ? Home()
-            : Login(),
+            : Splash(),
       ),
       routes: {
         "signup": (context) => SignUp(),
         "login": (context) => Login(),
+        "splash": (context) => Splash(),
         "home": (context) => Home(),
         "profile": (context) => Profile(),
         "about": (context) => About(),

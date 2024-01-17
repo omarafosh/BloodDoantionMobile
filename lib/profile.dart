@@ -71,6 +71,8 @@ class _ProfileState extends State<Profile> {
           'city': selectedCitiesOption ?? "الدوحة",
           'hospital': "الحماد",
           'isDonor': isChecked,
+          'isActive': true,
+          'isEvaluation': 0,
         })
         .then((value) {})
         .catchError((error) {
@@ -96,12 +98,6 @@ class _ProfileState extends State<Profile> {
             title: const Text(
               'حياة بدمك',
               style: TextStyle(color: Colors.white, fontFamily: "Cairo"),
-            ),
-            leading: IconButton(
-              icon: Icon(Icons.arrow_back),
-              onPressed: () {
-                Navigator.pop(context); // يقوم بالانتقال إلى الصفحة السابقة
-              },
             ),
           ),
           body: Form(

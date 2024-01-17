@@ -1,7 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:url_launcher/url_launcher.dart';
+// import 'package:url_launcher/url_launcher.dart';
 
 // String convertDateToSTring(timeStamp) {
 //   return DateFormat("dd-MM-yyyy").format(timeStamp).toString();
@@ -10,6 +11,7 @@ String convertStringToDateASTimestamp(DateTime date) {
   DateFormat dateFormat = DateFormat('dd/MM/yyyy');
   return dateFormat.format(date);
 }
+
 Timestamp convertStringToDateASTimestamp1(dateString) {
 // استبدل هذا بالسلسلة النصية للتاريخ
 
@@ -48,41 +50,100 @@ String insertNewLineAfterCharacterCount(String text, int charCount) {
   return buffer.toString();
 }
 
+// -----------------------
+Future<bool> getIsActiveValue() async {
+  // الحصول على معرف المستخدم الحالي
+  String? currentUserUID = FirebaseAuth.instance.currentUser?.uid;
 
- 
-  // Future<int> isWithin120Days() async {
-  //   final lastDonationSnapshot = await getLastDonation();
+  if (currentUserUID != null) {
+    QuerySnapshot snapshot = await FirebaseFirestore.instance
+        .collection('profile')
+        .where("user_id", isEqualTo: currentUserUID)
+        .get();
 
-  //   if (lastDonationSnapshot == null) {
-  //     // لا توجد تبرعات سابقة
-  //     return 0;
-  //   } else {
-  //     final storedDate = lastDonationSnapshot.toDate();
+    // التحقق مما إذا كان هناك قيمة مخزنة في الحقل isActive
+    if (snapshot.docs.isNotEmpty && snapshot.docs.first != null) {
+      bool isActive = snapshot.docs.first["isActive"];
+      print(isActive);
+      return isActive;
+    }
+  }
+  return false; // قيمة افتراضية في حالة عدم وجود الوثيقة أو الحقل
+}
 
-  //     final currentDate = convertStringToDateASTimestamp(DateTime.parse() ); // تفرض أن date.text يحتوي على تاريخ بتنسيق صحيح
+Future<Timestamp?> getLastDonation() async {
+  final user_id = FirebaseAuth.instance.currentUser?.uid;
+  if (user_id != null) {
+    CollectionReference donations =
+        FirebaseFirestore.instance.collection('donations');
 
-  //     int differenceInDays = await calculateDateDifference(storedDate);
-  //     print(differenceInDays);
-  //     // التحقق من أن الفارق بالأيام أقل من 120 يوماً
-  //     return differenceInDays <= 120 ? 1 : 0;
-  //   }
-  // }
+    QuerySnapshot last_donate = await donations
+        .where('user_id', isEqualTo: user_id)
+        .orderBy("date", descending: true)
+        .limit(1)
+        .get();
 
-  // Future<void> fetchDonationData() async {
-  //   QuerySnapshot<Map<String, dynamic>> donationSnapshot =
-  //       await FirebaseFirestore.instance.collection('donations').get();
+    if (last_donate.docs.isNotEmpty) {
+      return last_donate.docs.first['date'] as Timestamp;
+    }
+  }
+  return null;
+}
 
-  //   donationSnapshot.docs.forEach((doc) {
-  //     // يمكنك هنا القيام بالتحقق من الزمن وتحديث القيمة isActive إذا كان من المرتقب أن تمر 120 يومًا.
-  //     Timestamp donationTimestamp = doc['timestamp'];
-  //     bool isActive = doc['isActive'];
+int calculateDateDifference(DateTime storedDate, DateTime currentDate) {
+  Duration difference = currentDate.difference(storedDate);
+  int daysDifference = difference.inDays.abs();
+  return daysDifference;
+}
 
-  //     // قم بتحديث الحقل isActive بناءً على التحقق من انقضاء 120 يومًا من وقت التبرع
-  //     if (isActive && is120DaysPassed(donationTimestamp)) {
-  //       // تحديث الحقل isActive في Firestore
-  //       doc.reference.update({'isActive': false});
-  //     }
-  //   });
-  // }
+Future<bool> isWithin120Days(DateTime selectedDate) async {
+  final lastDonationSnapshot = await getLastDonation();
+  if (lastDonationSnapshot == null) {
+    return false;
+  } else {
+    final storedDate = lastDonationSnapshot.toDate();
+    final currentDate = selectedDate;
 
-  
+    int differenceInDays = calculateDateDifference(storedDate, currentDate);
+    print(differenceInDays);
+    // التحقق من أن الفارق بالأيام أقل من 120 يوماً
+    return differenceInDays <= 120;
+  }
+}
+
+dynamic launchTel() async {
+  Uri email = Uri(
+    scheme: 'tel',
+    path: "1234567890",
+  );
+  if (await launchUrl(email)) {
+    await launchUrl(email);
+  } else {
+    throw "Could not launch tel:// number";
+  }
+}
+
+Future<int> getUserDonationCount() async {
+  String currentUserUID = FirebaseAuth.instance.currentUser?.uid ?? '';
+  QuerySnapshot donationRecords = await FirebaseFirestore.instance
+      .collection('donations')
+      .where('user_id', isEqualTo: currentUserUID)
+      .get();
+
+  return donationRecords.docs.length;
+}
+
+Future<String> updateUserStatus() async {
+  int donationsCount = await getUserDonationCount();
+  String userStatus = '';
+
+  if (donationsCount == 0) {
+    userStatus = '0'; // حالة المستخدم لم يتبرع بعد
+  } else if (donationsCount == 1) {
+    userStatus = '1'; // حالة المستخدم بعد التبرع الأول
+  } else {
+    userStatus = '2'; // حالة المستخدم بعد التبرع الثاني وما بعده
+  }
+
+  return userStatus;
+}

@@ -5,15 +5,45 @@ import 'package:blood_donation/components/customTextField.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
-class Profile extends StatefulWidget {
-  const Profile({super.key});
+class ProfileEdit extends StatefulWidget {
+  const ProfileEdit({super.key});
 
   @override
-  State<Profile> createState() => _ProfileState();
+  State<ProfileEdit> createState() => _ProfileEditState();
 }
 
-class _ProfileState extends State<Profile> {
+class _ProfileEditState extends State<ProfileEdit> {
+  Future<void> fetchUserData() async {
+    final user_id = FirebaseAuth.instance.currentUser?.uid;
+    if (user_id != null) {
+      CollectionReference profile =
+          await FirebaseFirestore.instance.collection('profile');
+
+      QuerySnapshot profile_user =
+          await profile.where('user_id', isEqualTo: user_id).get();
+
+      if (profile_user.docs.isNotEmpty) {
+        setState(() {
+          DonorName.text = profile_user.docs.first['name'] ?? "";
+          DonorAge.text = profile_user.docs.first['age'] ?? "";
+          selectedBloodGroupOption =
+              profile_user.docs.first['group'] ?? bloodGroupOptions.first;
+          selectedGenderOption =
+              profile_user.docs.first['gender'] ?? GenderOptions.first;
+          DonorPhone1.text = profile_user.docs.first['phone1'] ?? "";
+          DonorPhone2.text = profile_user.docs.first['phone2'] ?? "";
+          selectedAvailableOption =
+              profile_user.docs.first['avilable'] ?? availableOptions.first;
+          selectedCitiesOption =
+              profile_user.docs.first['city'] ?? CitiesOptions.first;
+          isChecked = profile_user.docs.first['isDonor'] ?? false;
+        });
+      }
+    }
+  }
+
   GlobalKey<FormState> formstate = GlobalKey<FormState>();
 
   TextEditingController DonorName = TextEditingController();
@@ -55,32 +85,48 @@ class _ProfileState extends State<Profile> {
   String? selectedGenderOption;
   var GenderOptions = <String>['ذكر', 'انثى'];
 
-  CollectionReference profile =
-      FirebaseFirestore.instance.collection("profile");
-  Future<void> saveProfile() async {
-    await profile
-        .add({
-          'user_id': FirebaseAuth.instance.currentUser?.uid,
-          'name': DonorName.text,
-          'age': DonorAge.text,
-          'group': selectedBloodGroupOption ?? "A+",
-          'gender': selectedGenderOption ?? "ذكر",
-          'phone1': DonorPhone1.text,
-          'phone2': DonorPhone2.text,
-          'avilable': selectedAvailableOption ?? "صباحا",
-          'address': selectedCitiesOption ?? "الدوحة",
-          'isDonor': isChecked,
-        })
-        .then((value) {})
-        .catchError((error) {
-          AwesomeDialog(
-            context: context,
-            dialogType: DialogType.error,
-            animType: AnimType.rightSlide,
-            title: 'خطأ',
-            desc: 'هناك خطأ بإدخال البيانات',
-          ).show();
-        });
+  Future<void> updateProfile() async {
+    try {
+      if (!mounted) return;
+
+      CollectionReference profile =
+          FirebaseFirestore.instance.collection("profile");
+      var user_id = FirebaseAuth.instance.currentUser?.uid;
+      QuerySnapshot querySnapshot = await profile.get();
+      String pid = querySnapshot.docs.first.id;
+      await profile.doc(pid).update({
+        'user_id': user_id,
+        'name': DonorName.text ?? "",
+        'age': DonorAge.text ?? "",
+        'group': selectedBloodGroupOption ?? "A+",
+        'gender': selectedGenderOption ?? "ذكر",
+        'phone1': DonorPhone1.text ?? "",
+        'phone2': DonorPhone2.text ?? "",
+        'avilable': selectedAvailableOption ?? "صباحا",
+        'city': selectedCitiesOption ?? "الدوحة",
+        'isDonor': isChecked,
+      });
+
+      Navigator.of(context).pushReplacementNamed("home");
+
+      if (mounted) {}
+    } catch (error) {
+      if (mounted) {
+        AwesomeDialog(
+          context: context,
+          dialogType: DialogType.error,
+          animType: AnimType.rightSlide,
+          title: 'خطأ',
+          desc: 'هناك خطأ في عملية تحديث البيانات ',
+        ).show();
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    fetchUserData();
+    super.initState();
   }
 
   @override
@@ -247,36 +293,18 @@ class _ProfileState extends State<Profile> {
                   Padding(
                     padding: const EdgeInsets.all(10),
                     child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CustomButton(
-                            title: "حفظ و تعديل بيانات المتبرع",
-                            onPressed: () {
-                              if (formstate.currentState!.validate()) {
-                                try {
-                                  saveProfile();
-                        
-                                  Navigator.of(context)
-                                      .pushReplacementNamed("home");
-                                } on FirebaseAuthException catch (e) {
-                                  AwesomeDialog(
-                                    context: context,
-                                    dialogType: DialogType.error,
-                                    animType: AnimType.rightSlide,
-                                    title: 'Error',
-                                    desc: '$e',
-                                  ).show();
-                                }
-                              }
-                            }),
-                                                 CustomButton(
                             title: "تعديل بيانات المتبرع",
                             onPressed: () {
                               if (formstate.currentState!.validate()) {
                                 try {
-                                  saveProfile();
-                        
-                                  Navigator.of(context)
-                                      .pushReplacementNamed("home");
+                                  if (formstate.currentState!.validate()) {
+                                    updateProfile();
+                                    Navigator.of(context)
+                                        .pushReplacementNamed("home");
+                                  }
                                 } on FirebaseAuthException catch (e) {
                                   AwesomeDialog(
                                     context: context,
@@ -288,9 +316,18 @@ class _ProfileState extends State<Profile> {
                                 }
                               }
                             }),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        CustomButton(
+                            title: "حذف الحساب",
+                            onPressed: () {
+                              if (formstate.currentState!.validate()) {
+                                updateProfile();
+                              }
+                            }),
                       ],
                     ),
-                        
                   )
                 ],
               ),

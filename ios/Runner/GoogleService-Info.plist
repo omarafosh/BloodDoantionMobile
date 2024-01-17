@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>125620944035-crl2h86j3o12mlofdb9dv73q8vdadvdf.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.125620944035-crl2h86j3o12mlofdb9dv73q8vdadvdf</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>125620944035-29dj6u5m928qo3n2lulqr8h28hq4pgme.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyCHrh4E__pE1QWLxNi4qvi2Pzkx_boE9Nw</string>
+	<key>GCM_SENDER_ID</key>
+	<string>125620944035</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.example.bloodDonation</string>
+	<key>PROJECT_ID</key>
+	<string>blooddonationqatar</string>
+	<key>STORAGE_BUCKET</key>
+	<string>blooddonationqatar.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:125620944035:ios:359b1c207fe2471cffd316</string>
+	<key>DATABASE_URL</key>
+	<string>https://blooddonationqatar-default-rtdb.firebaseio.com</string>
+</dict>
+</plist>
