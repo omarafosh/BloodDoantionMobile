@@ -10,7 +10,16 @@ import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+   if (Platform.isIOS) {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+            apiKey: "AIzaSyCHrh4E__pE1QWLxNi4qvi2Pzkx_boE9Nw",
+            appId: "1:125620944035:ios:359b1c207fe2471cffd316",
+            messagingSenderId: "125620944035",
+            projectId: "blooddonationqatar"));
+  } else {
+    await Firebase.initializeApp();
+  }
   runApp(MyApp());
 }
 
